@@ -1,6 +1,8 @@
-#include <iostream>
+#include <DeviceServer.hpp>
 
 int main()
 {
-    std::cout << "Hello from Concurrent Smart Home Controller" << std::endl;
+    DeviceServer server;
+    server.receiveData("Hello from Concurrent Smart Home Controller");
+    return 0;
 }
