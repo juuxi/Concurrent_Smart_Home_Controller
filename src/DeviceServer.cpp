@@ -1,4 +1,5 @@
 #include <DeviceServer.hpp>
+#include <Device.hpp>
 
 void DeviceServer::sendData(std::shared_ptr<Device> target, std::string data)
 {

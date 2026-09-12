@@ -1,6 +1,9 @@
-#include <Device.hpp>
+#pragma once
+
 #include <memory>
 #include <iostream>
+
+class Device;
 
 class DeviceServer
 {
