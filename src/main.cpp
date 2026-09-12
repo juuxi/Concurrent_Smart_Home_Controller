@@ -5,6 +5,6 @@ int main()
 {
     DeviceServer server;
     LightDevice lightDevice;
-    lightDevice.sendData(std::make_unique<DeviceServer>(server), "Brightness: full");
+    lightDevice.sendData(server, "Brightness: full");
     return 0;
 }
