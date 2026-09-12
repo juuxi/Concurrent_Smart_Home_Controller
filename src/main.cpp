@@ -1,8 +1,10 @@
 #include <DeviceServer.hpp>
+#include <LightDevice.hpp>
 
 int main()
 {
     DeviceServer server;
-    server.receiveData("Hello from Concurrent Smart Home Controller");
+    LightDevice lightDevice;
+    lightDevice.sendData(std::make_unique<DeviceServer>(server), "Brightness: full");
     return 0;
 }
