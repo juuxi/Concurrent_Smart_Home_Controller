@@ -6,12 +6,13 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    
-    DeviceServer server;
-    LightDevice lightDevice;
-    lightDevice.sendData(server, "Brightness: full");
 
     SmartHomeDashboard dashboard;
     dashboard.show();
+
+    DeviceServer server(&dashboard);
+    LightDevice lightDevice;
+    lightDevice.sendData(server, "Brightness: full");
+
     return app.exec();
 }
