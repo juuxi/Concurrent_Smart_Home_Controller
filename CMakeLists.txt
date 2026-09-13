@@ -18,6 +18,7 @@ add_executable(smart_home_controller
     src/main.cpp
     src/DeviceServer.cpp
     src/LightDevice.cpp
+    src/TemperatureDevice.cpp
     src/desktop/SmartHomeDashboard.cpp
 )
 
