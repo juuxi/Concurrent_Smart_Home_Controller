@@ -12,11 +12,11 @@ int main(int argc, char *argv[])
     SmartHomeDashboard dashboard;
     dashboard.show();
 
-    DeviceServer server(&dashboard);
-    LightDevice lightDevice(std::make_shared<DeviceServer>(server));
+    auto server = std::make_shared<DeviceServer>(&dashboard);
+    LightDevice lightDevice(server);
     lightDevice.receiveId();
     lightDevice.changeBrightness("full");
-    TemperatureDevice temperatureDevice(std::make_shared<DeviceServer>(server));
+    TemperatureDevice temperatureDevice(server);
     temperatureDevice.receiveId();
     temperatureDevice.changeTemperature(25);
 
