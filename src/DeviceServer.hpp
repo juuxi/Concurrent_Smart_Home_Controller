@@ -3,6 +3,7 @@
 #include <memory>
 #include <iostream>
 #include <QWidget>
+#include <boost/log/trivial.hpp>
 #include <SmartHomeDashboard.hpp>
 
 class Device;
