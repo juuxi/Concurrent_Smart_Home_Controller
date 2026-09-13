@@ -1,7 +1,7 @@
 #include <TemperatureDevice.hpp>
 #include <DeviceServer.hpp>
 
-void TemperatureDevice::sendData(DeviceServer& server, std::string data)
+void TemperatureDevice::sendData(DeviceServer& server, DeviceData data)
 {
     server.receiveData(data);
 }
@@ -9,4 +9,10 @@ void TemperatureDevice::sendData(DeviceServer& server, std::string data)
 void TemperatureDevice::receiveData(std::string data)
 {
     std::cout << data << std::endl;
+}
+
+void TemperatureDevice::changeTemperature(DeviceServer& server, int value)
+{
+    temperature = value;
+    sendData(server, temperature);
 }
