@@ -2,6 +2,7 @@
 #include <LightDevice.hpp>
 #include <TemperatureDevice.hpp>
 #include <SmartHomeDashboard.hpp>
+
 #include <QApplication>
 
 int main(int argc, char *argv[])
@@ -12,12 +13,12 @@ int main(int argc, char *argv[])
     dashboard.show();
 
     DeviceServer server(&dashboard);
-    LightDevice lightDevice;
-    lightDevice.receiveId(server);
-    lightDevice.changeBrightness(server, "full");
-    TemperatureDevice temperatureDevice;
-    temperatureDevice.receiveId(server);
-    temperatureDevice.changeTemperature(server, 25);
+    LightDevice lightDevice(std::make_shared<DeviceServer>(server));
+    lightDevice.receiveId();
+    lightDevice.changeBrightness("full");
+    TemperatureDevice temperatureDevice(std::make_shared<DeviceServer>(server));
+    temperatureDevice.receiveId();
+    temperatureDevice.changeTemperature(25);
 
     return app.exec();
 }

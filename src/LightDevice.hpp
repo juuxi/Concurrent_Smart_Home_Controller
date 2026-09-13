@@ -5,10 +5,12 @@ class LightDevice: public Device
 {
     std::string brightness;
 public:
-    void sendData(DeviceServer& server, DeviceData data) override;
+    LightDevice(std::shared_ptr<DeviceServer> server);
+
+    void sendData(DeviceData data) override;
     void receiveData(std::string data) override;
 
-    void changeBrightness(DeviceServer& server, std::string value);
+    void changeBrightness(std::string value);
 
     ~LightDevice() = default;
 };

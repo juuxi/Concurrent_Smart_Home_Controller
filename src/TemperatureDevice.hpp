@@ -4,10 +4,12 @@ class TemperatureDevice: public Device
 {
     int temperature;
 public:
-    void sendData(DeviceServer& server, DeviceData data) override;
+    TemperatureDevice(std::shared_ptr<DeviceServer> server);
+
+    void sendData(DeviceData data) override;
     void receiveData(std::string data) override;
 
-    void changeTemperature(DeviceServer& server, int value);
+    void changeTemperature(int value);
 
     ~TemperatureDevice() = default;
 };

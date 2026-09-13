@@ -1,7 +1,7 @@
 #include <Device.hpp>
 #include <DeviceServer.hpp>
 
-void Device::receiveId(DeviceServer& server) 
+void Device::receiveId() 
 {
-    id = server.giveDeviceId();
+    id = server->giveDeviceId();
 }

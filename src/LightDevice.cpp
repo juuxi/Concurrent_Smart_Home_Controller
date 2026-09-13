@@ -1,9 +1,11 @@
 #include <LightDevice.hpp>
 #include <DeviceServer.hpp>
 
-void LightDevice::sendData(DeviceServer& server, DeviceData data)
+LightDevice::LightDevice(std::shared_ptr<DeviceServer> server): Device(server) {}
+
+void LightDevice::sendData(DeviceData data)
 {
-    server.receiveData(id, data);
+    server->receiveData(id, data);
 }
 
 void LightDevice::receiveData(std::string data)
@@ -11,8 +13,8 @@ void LightDevice::receiveData(std::string data)
     std::cout << data << std::endl;
 }
 
-void LightDevice::changeBrightness(DeviceServer& server, std::string value)
+void LightDevice::changeBrightness(std::string value)
 {
     brightness = value;
-    sendData(server, value);
+    sendData(value);
 }
