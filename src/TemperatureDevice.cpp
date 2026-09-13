@@ -3,7 +3,7 @@
 
 void TemperatureDevice::sendData(DeviceServer& server, DeviceData data)
 {
-    server.receiveData(data);
+    server.receiveData(id, data);
 }
 
 void TemperatureDevice::receiveData(std::string data)

@@ -17,13 +17,16 @@ class DeviceServer
 {
 private:
     SmartHomeDashboard* dashboard;
+    int devices;
 
-    void handlePayload(const int data);
-    void handlePayload(const std::string& data);
+    void handlePayload(const int id, const int data);
+    void handlePayload(const int id, const std::string& data);
 public:
-    DeviceServer() : dashboard(nullptr) {}
-    DeviceServer(SmartHomeDashboard* dashboard) : dashboard(dashboard) {}
+    DeviceServer() : dashboard(nullptr), devices(0) {}
+    DeviceServer(SmartHomeDashboard* dashboard) : dashboard(dashboard), devices(0) {}
+
+    int giveDeviceId();
     
     void sendData(std::shared_ptr<Device> target, std::string data);
-    void receiveData(DeviceData data);
+    void receiveData(const int id, DeviceData data);
 };

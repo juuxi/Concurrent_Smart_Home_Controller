@@ -13,8 +13,10 @@ int main(int argc, char *argv[])
 
     DeviceServer server(&dashboard);
     LightDevice lightDevice;
+    lightDevice.receiveId(server);
     lightDevice.changeBrightness(server, "full");
     TemperatureDevice temperatureDevice;
+    temperatureDevice.receiveId(server);
     temperatureDevice.changeTemperature(server, 25);
 
     return app.exec();

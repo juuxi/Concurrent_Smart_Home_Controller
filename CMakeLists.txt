@@ -16,6 +16,7 @@ set(CMAKE_AUTOMOC ON)
 
 add_executable(smart_home_controller
     src/main.cpp
+    src/Device.cpp
     src/DeviceServer.cpp
     src/LightDevice.cpp
     src/TemperatureDevice.cpp
