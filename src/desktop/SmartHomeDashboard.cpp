@@ -4,7 +4,7 @@
 SmartHomeDashboard::SmartHomeDashboard(QWidget* parent)
     : QWidget(parent), centralLabel(new QLabel(this))
 {
-    resize(1000, 500);
+    setWindowState(Qt::WindowMaximized);
     setWindowTitle("Smart Home Dashboard");
 
     centralLabel->setText("Welcome to Smart Home Dashboard");
