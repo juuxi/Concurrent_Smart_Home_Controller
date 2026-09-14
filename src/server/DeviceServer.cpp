@@ -1,9 +1,19 @@
 #include <DeviceServer.hpp>
 #include <Device.hpp>
 
+DeviceServer::DeviceServer() : dashboard(nullptr), devices(0) 
+{
+    boost::log::add_file_log("server_logs.log");
+}
+
+DeviceServer::DeviceServer(SmartHomeDashboard* dashboard) : dashboard(dashboard), devices(0) 
+{
+    boost::log::add_file_log("server_logs.log");
+}
+
+
 void DeviceServer::handlePayload(const int id, const int data)
 {
-    std::cout << data << std::endl;
     BOOST_LOG_TRIVIAL(info) << "[Server] Receive Temperature: " << data << " from device " << id;
     if (dashboard)
         dashboard->setLabelText(id - 1, std::to_string(data));
@@ -11,7 +21,6 @@ void DeviceServer::handlePayload(const int id, const int data)
 
 void DeviceServer::handlePayload(const int id, const std::string& data)
 {
-    std::cout << data << std::endl;
     BOOST_LOG_TRIVIAL(info) << "[Server] Receive Brightness: " << data << " from device " << id;
     if (dashboard)
         dashboard->setLabelText(id - 1, data);

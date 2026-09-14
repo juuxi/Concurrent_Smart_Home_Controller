@@ -6,6 +6,7 @@
 
 #include <QWidget>
 #include <boost/log/trivial.hpp>
+#include <boost/log/utility/setup/file.hpp>
 
 #include <SmartHomeDashboard.hpp>
 
@@ -22,8 +23,8 @@ private:
     void handlePayload(const int id, const int data);
     void handlePayload(const int id, const std::string& data);
 public:
-    DeviceServer() : dashboard(nullptr), devices(0) {}
-    DeviceServer(SmartHomeDashboard* dashboard) : dashboard(dashboard), devices(0) {}
+    DeviceServer();
+    DeviceServer(SmartHomeDashboard* dashboard);
 
     int giveDeviceId();
     
