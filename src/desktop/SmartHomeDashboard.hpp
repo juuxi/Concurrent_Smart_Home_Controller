@@ -21,12 +21,12 @@ public:
     void setDeviceState(int index, const std::string& text);
     
     void addDevice(int id, const std::string& text);
-    QGridLayout* getDevice(int index);
+    QWidget* getDevice(int index);
 
 private:
     QWidget* labelContainer;
     QHBoxLayout* deviceLayout;
-    std::vector<QGridLayout*> device_containers;
+    std::vector<QWidget*> deviceContainers;
 
     enum class DeviceLayoutItem
     {
