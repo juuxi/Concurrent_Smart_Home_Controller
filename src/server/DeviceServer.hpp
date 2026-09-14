@@ -20,10 +20,6 @@ private:
     SmartHomeDashboard* dashboard;
     int devices;
 
-    using idHandler = std::function<std::string()>;
-    std::vector<idHandler> idHandlers;
-    void setupIdHandlers();
-
     void handlePayload(const int id, const int data);
     void handlePayload(const int id, const std::string& data);
 public:

@@ -19,8 +19,29 @@ SmartHomeDashboard::SmartHomeDashboard(QWidget* parent)
     setLayout(layout);
 }
 
-void SmartHomeDashboard::addDevice(int id, const std::string& text)
+void SmartHomeDashboard::addDevice(int id, DeviceType type)
 {
+    // !! REWRITE !!
+    std::string text;
+    std::vector<QPushButton*> btns;
+    if (type == DeviceType::LIGHT_DEVICE)
+    {
+        text = "Brightness:";
+        auto off_btn = new QPushButton("Off");
+        btns.push_back(off_btn);
+        auto on_btn = new QPushButton("On");
+        btns.push_back(on_btn);
+    }
+    if (type == DeviceType::TEMPERATURE_DEVICE)
+    {
+        text = "Temperature:";
+        auto cool_btn = new QPushButton("Cool");
+        btns.push_back(cool_btn);
+        auto warm_btn = new QPushButton("Warm");
+        btns.push_back(warm_btn);
+    }
+    // !! REWRITE !!
+
     QWidget* container = new QWidget();
     container->setStyleSheet("border-radius: 4px; border: 1px solid #ccc");
     QGridLayout* layout = new QGridLayout();
@@ -33,6 +54,8 @@ void SmartHomeDashboard::addDevice(int id, const std::string& text)
     QLabel* measurementValue = new QLabel(QString::fromStdString(text));
     measurementValue->setStyleSheet("background-color: #f0f0f0; padding: 8px; border-radius: 4px; border: 1px solid #ddd;");
     layout->addWidget(measurementValue, 1, 1);
+    for (int i = 0; i < btns.size(); i++)
+        layout->addWidget(btns[i], 2, i);
 
     container->setLayout(layout);
 

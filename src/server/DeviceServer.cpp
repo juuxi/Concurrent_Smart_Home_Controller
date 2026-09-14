@@ -4,19 +4,11 @@
 DeviceServer::DeviceServer() : dashboard(nullptr), devices(0) 
 {
     boost::log::add_file_log("server_logs.log");
-    setupIdHandlers();
 }
 
 DeviceServer::DeviceServer(SmartHomeDashboard* dashboard) : dashboard(dashboard), devices(0) 
 {
     boost::log::add_file_log("server_logs.log");
-    setupIdHandlers();
-}
-
-void DeviceServer::setupIdHandlers()
-{
-    idHandlers.push_back([](){return "Brightness:";});
-    idHandlers.push_back([](){return "Temperature:";});
 }
 
 void DeviceServer::handlePayload(const int id, const int data)
@@ -50,6 +42,6 @@ int DeviceServer::giveDeviceId(DeviceType type)  // should be protected when mul
 {
     devices++;
     if (dashboard)
-        dashboard->addDevice(devices, idHandlers[static_cast<int>(type)]());
+        dashboard->addDevice(devices, type);
     return devices;
 }

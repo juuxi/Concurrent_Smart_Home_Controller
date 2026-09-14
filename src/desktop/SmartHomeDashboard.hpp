@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QHBoxLayout>
 #include <QGridLayout>
+#include <QPushButton>
 #include <vector>
 
 enum class DeviceType
@@ -20,7 +21,7 @@ public:
     SmartHomeDashboard(QWidget* parent = nullptr);
     void setDeviceState(int index, const std::string& text);
     
-    void addDevice(int id, const std::string& text);
+    void addDevice(int id, DeviceType type);
     QWidget* getDevice(int index);
 
 private:
