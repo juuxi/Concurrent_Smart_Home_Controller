@@ -6,6 +6,12 @@
 #include <QGridLayout>
 #include <vector>
 
+enum class DeviceType
+{
+    LIGHT_DEVICE = 0,
+    TEMPERATURE_DEVICE
+};
+
 class SmartHomeDashboard: public QWidget
 {
     Q_OBJECT
@@ -14,7 +20,7 @@ public:
     SmartHomeDashboard(QWidget* parent = nullptr);
     void setDeviceState(int index, const std::string& text);
     
-    void addDevice(const std::string& text);
+    void addDevice(int id, const std::string& text);
     QGridLayout* getDevice(int index);
 
 private:

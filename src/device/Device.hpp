@@ -4,6 +4,8 @@
 #include <variant>
 #include <memory>
 
+#include <SmartHomeDashboard.hpp>
+
 class DeviceServer;
 
 using DeviceData = std::variant<std::string, int>;
@@ -15,7 +17,7 @@ protected:
     int id;
 public:
     Device(std::shared_ptr<DeviceServer> server): server(server) {}
-    void receiveId();
+    virtual void receiveId() = 0;
 
     virtual void sendData(DeviceData data) = 0;
     virtual void receiveData(std::string data) = 0;

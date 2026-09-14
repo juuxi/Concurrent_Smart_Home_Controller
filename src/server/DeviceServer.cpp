@@ -4,13 +4,20 @@
 DeviceServer::DeviceServer() : dashboard(nullptr), devices(0) 
 {
     boost::log::add_file_log("server_logs.log");
+    setupIdHandlers();
 }
 
 DeviceServer::DeviceServer(SmartHomeDashboard* dashboard) : dashboard(dashboard), devices(0) 
 {
     boost::log::add_file_log("server_logs.log");
+    setupIdHandlers();
 }
 
+void DeviceServer::setupIdHandlers()
+{
+    idHandlers.push_back([](){return "Brightness:";});
+    idHandlers.push_back([](){return "Temperature:";});
+}
 
 void DeviceServer::handlePayload(const int id, const int data)
 {
@@ -39,10 +46,10 @@ void DeviceServer::receiveData(const int id, DeviceData data)
     }, data);
 }
 
-int DeviceServer::giveDeviceId()  // should be protected when multithreading is implemented
+int DeviceServer::giveDeviceId(DeviceType type)  // should be protected when multithreading is implemented
 {
     devices++;
     if (dashboard)
-        dashboard->addDevice("Device " + std::to_string(devices));
+        dashboard->addDevice(devices, idHandlers[static_cast<int>(type)]());
     return devices;
 }

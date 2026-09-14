@@ -3,6 +3,11 @@
 
 LightDevice::LightDevice(std::shared_ptr<DeviceServer> server): Device(server) {}
 
+void LightDevice::receiveId()
+{
+    id = server->giveDeviceId(DeviceType::LIGHT_DEVICE);
+}
+
 void LightDevice::sendData(DeviceData data)
 {
     server->receiveData(id, data);

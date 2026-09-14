@@ -6,6 +6,8 @@ class TemperatureDevice: public Device
 public:
     TemperatureDevice(std::shared_ptr<DeviceServer> server);
 
+    void receiveId() override;
+
     void sendData(DeviceData data) override;
     void receiveData(std::string data) override;
 

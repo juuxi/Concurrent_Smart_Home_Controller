@@ -20,13 +20,17 @@ private:
     SmartHomeDashboard* dashboard;
     int devices;
 
+    using idHandler = std::function<std::string()>;
+    std::vector<idHandler> idHandlers;
+    void setupIdHandlers();
+
     void handlePayload(const int id, const int data);
     void handlePayload(const int id, const std::string& data);
 public:
     DeviceServer();
     DeviceServer(SmartHomeDashboard* dashboard);
 
-    int giveDeviceId();
+    int giveDeviceId(DeviceType type);
     
     void sendData(std::shared_ptr<Device> target, std::string data);
     void receiveData(const int id, DeviceData data);

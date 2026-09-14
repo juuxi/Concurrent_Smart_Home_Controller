@@ -19,18 +19,18 @@ SmartHomeDashboard::SmartHomeDashboard(QWidget* parent)
     setLayout(layout);
 }
 
-void SmartHomeDashboard::addDevice(const std::string& text)
+void SmartHomeDashboard::addDevice(int id, const std::string& text)
 {
     QGridLayout* container = new QGridLayout();
-    QLabel* idLabel = new QLabel(QString::fromStdString(text));
+    QLabel* idLabel = new QLabel("id: " + QString::number(id));
     idLabel->setStyleSheet("background-color: #f0f0f0; padding: 8px; border-radius: 4px; border: 1px solid #ddd;");
-    container->addWidget(idLabel);
+    container->addWidget(idLabel, 0, 0, 1, 2, Qt::AlignCenter);
     QLabel* measurementLabel = new QLabel(QString::fromStdString(text));
     measurementLabel->setStyleSheet("background-color: #f0f0f0; padding: 8px; border-radius: 4px; border: 1px solid #ddd;");
-    container->addWidget(measurementLabel);
+    container->addWidget(measurementLabel, 1, 0);
     QLabel* measurementValue = new QLabel(QString::fromStdString(text));
     measurementValue->setStyleSheet("background-color: #f0f0f0; padding: 8px; border-radius: 4px; border: 1px solid #ddd;");
-    container->addWidget(measurementValue);
+    container->addWidget(measurementValue, 1, 1);
 
     device_containers.push_back(container);
     
