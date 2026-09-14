@@ -22,9 +22,15 @@ SmartHomeDashboard::SmartHomeDashboard(QWidget* parent)
 void SmartHomeDashboard::addDevice(const std::string& text)
 {
     QGridLayout* container = new QGridLayout();
-    QLabel* deviceLabel = new QLabel(QString::fromStdString(text));
-    deviceLabel->setStyleSheet("background-color: #f0f0f0; padding: 8px; border-radius: 4px; border: 1px solid #ddd;");
-    container->addWidget(deviceLabel);
+    QLabel* idLabel = new QLabel(QString::fromStdString(text));
+    idLabel->setStyleSheet("background-color: #f0f0f0; padding: 8px; border-radius: 4px; border: 1px solid #ddd;");
+    container->addWidget(idLabel);
+    QLabel* measurementLabel = new QLabel(QString::fromStdString(text));
+    measurementLabel->setStyleSheet("background-color: #f0f0f0; padding: 8px; border-radius: 4px; border: 1px solid #ddd;");
+    container->addWidget(measurementLabel);
+    QLabel* measurementValue = new QLabel(QString::fromStdString(text));
+    measurementValue->setStyleSheet("background-color: #f0f0f0; padding: 8px; border-radius: 4px; border: 1px solid #ddd;");
+    container->addWidget(measurementValue);
 
     device_containers.push_back(container);
     
@@ -41,7 +47,10 @@ QGridLayout* SmartHomeDashboard::getDevice(int index)
 void SmartHomeDashboard::setDeviceState(int index, const std::string& text)
 {
     auto container = getDevice(index);
-    auto label = qobject_cast<QLabel*>(container->itemAt(0)->widget());
+    if (!container || container->count() <= static_cast<int>(DeviceLayoutItem::MESAURMENT_VALUE))
+        return;
+    auto label = qobject_cast<QLabel*>(container->
+        itemAt(static_cast<int>(DeviceLayoutItem::MESAURMENT_VALUE))->widget());
     if (label)
         label->setText(QString::fromStdString(text));
 }

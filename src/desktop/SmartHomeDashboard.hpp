@@ -21,4 +21,12 @@ private:
     QWidget* labelContainer;
     QHBoxLayout* deviceLayout;
     std::vector<QGridLayout*> device_containers;
+
+    enum class DeviceLayoutItem
+    {
+        ID_LABEL = 0,
+        MEASURMENT_LABEL,
+        MESAURMENT_VALUE,
+        BUTTON_LAYOUT
+    };
 };
