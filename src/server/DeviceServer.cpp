@@ -16,14 +16,14 @@ void DeviceServer::handlePayload(const int id, const int data)
 {
     BOOST_LOG_TRIVIAL(info) << "[Server] Receive Temperature: " << data << " from device " << id;
     if (dashboard)
-        dashboard->setLabelText(id - 1, std::to_string(data));
+        dashboard->setDeviceState(id - 1, std::to_string(data));
 }
 
 void DeviceServer::handlePayload(const int id, const std::string& data)
 {
     BOOST_LOG_TRIVIAL(info) << "[Server] Receive Brightness: " << data << " from device " << id;
     if (dashboard)
-        dashboard->setLabelText(id - 1, data);
+        dashboard->setDeviceState(id - 1, data);
 }
 
 void DeviceServer::sendData(std::shared_ptr<Device> target, std::string data)
@@ -43,6 +43,6 @@ int DeviceServer::giveDeviceId()  // should be protected when multithreading is 
 {
     devices++;
     if (dashboard)
-        dashboard->addLabel("Device " + std::to_string(devices));
+        dashboard->addDevice("Device " + std::to_string(devices));
     return devices;
 }

@@ -3,6 +3,7 @@
 #include <QWidget>
 #include <QLabel>
 #include <QHBoxLayout>
+#include <QGridLayout>
 #include <vector>
 
 class SmartHomeDashboard: public QWidget
@@ -10,14 +11,14 @@ class SmartHomeDashboard: public QWidget
     Q_OBJECT
 
 public:
-    SmartHomeDashboard(QWidget *parent = nullptr);
-    void setLabelText(int index, const std::string& text);
+    SmartHomeDashboard(QWidget* parent = nullptr);
+    void setDeviceState(int index, const std::string& text);
     
-    void addLabel(const std::string& text);
-    QLabel* getLabel(int index);
+    void addDevice(const std::string& text);
+    QGridLayout* getDevice(int index);
 
 private:
-    QWidget *labelContainer;
-    QHBoxLayout *labelLayout;
-    std::vector<QLabel*> labels;
+    QWidget* labelContainer;
+    QHBoxLayout* deviceLayout;
+    std::vector<QGridLayout*> device_containers;
 };
