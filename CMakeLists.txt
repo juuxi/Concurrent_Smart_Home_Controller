@@ -32,3 +32,5 @@ target_include_directories(smart_home_controller PRIVATE ${CMAKE_CURRENT_SOURCE_
 target_include_directories(smart_home_controller PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/server)
 target_link_libraries(smart_home_controller PRIVATE Qt5::Widgets)
 target_link_libraries(smart_home_controller PRIVATE ${Boost_LIBRARIES})
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
