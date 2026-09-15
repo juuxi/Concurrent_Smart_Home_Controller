@@ -52,35 +52,17 @@ void SmartHomeDashboard::setupTypeDependentUIHandlers()
         measurementLabel->setStyleSheet("background-color: #f0f0f0; padding: 8px; border-radius: 4px; border: 1px solid #ddd;");
         layout->addWidget(measurementLabel, 1, 0);
 
-        // !! REWRITE !! warm and cool logics are essentially the same 
         std::vector<QPushButton*> btns;
         auto cool_btn = new QPushButton("Cool");
         btns.push_back(cool_btn);
         connect(cool_btn, &QPushButton::clicked, this, [this, device_index]() {
-            auto container = getDevice(device_index);
-            if (!container)
-                return;
-            auto layout = container->findChild<QGridLayout*>();
-            if (!layout || !layout->itemAtPosition(1, 1))
-                return;
-            auto label = qobject_cast<QLabel*>(layout->itemAtPosition(1, 1)->widget());
-            int currTemp = std::stoi(label->text().toStdString());
-            this->handleCoolButton(device_index, currTemp);
+            this->handleCoolButton(device_index);
         });
         auto warm_btn = new QPushButton("Warm");
         btns.push_back(warm_btn);
         connect(warm_btn, &QPushButton::clicked, this, [this, device_index]() {
-            auto container = getDevice(device_index);
-            if (!container)
-                return;
-            auto layout = container->findChild<QGridLayout*>();
-            if (!layout || !layout->itemAtPosition(1, 1))
-                return;
-            auto label = qobject_cast<QLabel*>(layout->itemAtPosition(1, 1)->widget());
-            int currTemp = std::stoi(label->text().toStdString());
-            this->handleWarmButton(device_index, currTemp);
+            this->handleWarmButton(device_index);
         });
-        // !! REWRITE !!
 
         for (int i = 0; i < btns.size(); i++)
             layout->addWidget(btns[i], 2, i);
@@ -116,13 +98,7 @@ QWidget* SmartHomeDashboard::getDevice(int index)
 
 void SmartHomeDashboard::setDeviceState(int index, const std::string& text)
 {
-    auto container = getDevice(index);
-    if (!container)
-        return;
-    auto layout = container->findChild<QGridLayout*>();
-    if (!layout || !layout->itemAtPosition(1, 1))
-        return;
-    auto label = qobject_cast<QLabel*>(layout->itemAtPosition(1, 1)->widget());
+    auto label = getValueLabel(index);
     if (label)
         label->setText(QString::fromStdString(text));
 }
@@ -144,14 +120,35 @@ void SmartHomeDashboard::handleOffButton(int index)
         server->transmitData(index, "lights off");
 }
 
-void SmartHomeDashboard::handleCoolButton(int index, int currTemp)
+QLabel* SmartHomeDashboard::getValueLabel(int index)
 {
+    auto container = getDevice(index);
+    if (!container)
+        return nullptr;
+    auto layout = container->findChild<QGridLayout*>();
+    if (!layout || !layout->itemAtPosition(1, 1))
+        return nullptr;
+    auto label = qobject_cast<QLabel*>(layout->itemAtPosition(1, 1)->widget());
+    return label;
+}
+
+int SmartHomeDashboard::getCurrentDeviceTemp(int index)
+{
+    auto label = getValueLabel(index);
+    int currTemp = std::stoi(label->text().toStdString());
+    return currTemp;
+}
+
+void SmartHomeDashboard::handleCoolButton(int index)
+{
+    int currTemp = getCurrentDeviceTemp(index);
     if (server)
         server->transmitData(index, std::to_string(currTemp - 1));
 }
 
-void SmartHomeDashboard::handleWarmButton(int index, int currTemp)
+void SmartHomeDashboard::handleWarmButton(int index)
 {
+    int currTemp = getCurrentDeviceTemp(index);
     if (server)
         server->transmitData(index, std::to_string(currTemp + 1));
 }

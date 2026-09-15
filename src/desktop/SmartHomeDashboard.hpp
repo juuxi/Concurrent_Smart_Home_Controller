@@ -37,9 +37,12 @@ private:
     std::vector<HandleTypeDependentUI> typeDependentUIHandlers;
     void setupTypeDependentUIHandlers();
 
+    QLabel* getValueLabel(int index);
+    int getCurrentDeviceTemp(int index);
+
     void handleOffButton(int index);
     void handleOnButton(int index);
 
-    void handleCoolButton(int index, int currTemp);
-    void handleWarmButton(int index, int currTemp);
+    void handleCoolButton(int index);
+    void handleWarmButton(int index);
 };
