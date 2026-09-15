@@ -1,13 +1,14 @@
 #include <DeviceServer.hpp>
 #include <Device.hpp>
+#include <TemperatureDevice.hpp>
 
-DeviceServer::DeviceServer() : dashboard(nullptr), devices(0) 
+DeviceServer::DeviceServer() : dashboard(nullptr), devicesAmount(0) 
 {
     boost::log::add_file_log("server_logs.log");
     parseConfigFile("server_config.ini");
 }
 
-DeviceServer::DeviceServer(SmartHomeDashboard* dashboard) : dashboard(dashboard), devices(0) 
+DeviceServer::DeviceServer(SmartHomeDashboard* dashboard) : dashboard(dashboard), devicesAmount(0) 
 {
     boost::log::add_file_log("server_logs.log");
     parseConfigFile("server_config.ini");
@@ -48,12 +49,16 @@ void DeviceServer::handlePayload(const int id, const int data)
     {
         BOOST_LOG_TRIVIAL(warning) << "[Server] Temperature " << temperature << " from device " << id 
             << " is below the lowest threshold of " << lowest_temp << ", setting to lowest threshold";
+        
+        sendData(connectedDevices[id - 1], std::to_string(lowest_temp));
         temperature = lowest_temp;
     }
     else if (temperature > highest_temp)
     {
         BOOST_LOG_TRIVIAL(warning) << "[Server] Temperature " << temperature << " from device " << id 
             << " is above the highest threshold of " << highest_temp << ", setting to highest threshold";
+        
+        sendData(connectedDevices[id - 1], std::to_string(highest_temp));
         temperature = highest_temp;
     }
 
@@ -68,9 +73,24 @@ void DeviceServer::handlePayload(const int id, const std::string& data)
         dashboard->setDeviceState(id - 1, data);
 }
 
+void DeviceServer::addDevice(std::shared_ptr<Device> device)
+{
+    connectedDevices.push_back(device);
+}
+
 void DeviceServer::sendData(std::shared_ptr<Device> target, std::string data)
 {
-    target->receiveData(data);
+    try {
+        if (dynamic_cast<TemperatureDevice*>(target.get())) {
+            target->receiveData(std::stoi(data));
+        }
+        else {
+            target->receiveData(data);
+        }
+    }
+    catch (const std::exception& e) {
+        BOOST_LOG_TRIVIAL(error) << "[Server] Failed to send data to device: " << e.what();
+    }
     BOOST_LOG_TRIVIAL(info) << "[Server] Send data \"" << data << "\" to " << target;
 }
 
@@ -83,8 +103,8 @@ void DeviceServer::receiveData(const int id, DeviceData data)
 
 int DeviceServer::giveDeviceId(DeviceType type)  // should be protected when multithreading is implemented
 {
-    devices++;
+    devicesAmount++;
     if (dashboard)
-        dashboard->addDevice(devices, type);
-    return devices;
+        dashboard->addDevice(devicesAmount, type);
+    return devicesAmount;
 }

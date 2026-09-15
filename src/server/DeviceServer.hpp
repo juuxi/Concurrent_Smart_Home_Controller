@@ -21,7 +21,8 @@ class DeviceServer
 {
 private:
     SmartHomeDashboard* dashboard;
-    int devices;
+    int devicesAmount;
+    std::vector<std::shared_ptr<Device>> connectedDevices;
 
     void handlePayload(const int id, const int data);
     void handlePayload(const int id, const std::string& data);
@@ -31,6 +32,8 @@ private:
 public:
     DeviceServer();
     DeviceServer(SmartHomeDashboard* dashboard);
+
+    void addDevice(std::shared_ptr<Device> device);
 
     int giveDeviceId(DeviceType type);
     
