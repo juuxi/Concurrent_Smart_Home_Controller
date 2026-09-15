@@ -30,6 +30,11 @@ add_custom_command(TARGET smart_home_controller POST_BUILD
     "${CMAKE_SOURCE_DIR}/${SERVER}/server_config.ini"
     "$<TARGET_FILE_DIR:smart_home_controller>/server_config.ini"
 )
+add_custom_command(TARGET smart_home_controller POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    "${CMAKE_SOURCE_DIR}/${DESKTOP}/styles.qss"
+    "$<TARGET_FILE_DIR:smart_home_controller>/styles.qss"
+)
 
 target_include_directories(smart_home_controller PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_include_directories(smart_home_controller PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/desktop)

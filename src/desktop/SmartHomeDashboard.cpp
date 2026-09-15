@@ -26,7 +26,7 @@ void SmartHomeDashboard::setupTypeDependentUIHandlers()
     typeDependentUIHandlers.push_back([this](QGridLayout* layout, int device_index) {
         std::string text = "Brightness:";
         QLabel* measurementLabel = new QLabel(QString::fromStdString(text));
-        measurementLabel->setStyleSheet("background-color: #f0f0f0; padding: 8px; border-radius: 4px; border: 1px solid #ddd;");
+        measurementLabel->setObjectName("measuringLabel");
         layout->addWidget(measurementLabel, 1, 0);
 
         std::vector<QPushButton*> btns;
@@ -49,7 +49,7 @@ void SmartHomeDashboard::setupTypeDependentUIHandlers()
     typeDependentUIHandlers.push_back([this](QGridLayout* layout, int device_index) {
         std::string text = "Temperature:";
         QLabel* measurementLabel = new QLabel(QString::fromStdString(text));
-        measurementLabel->setStyleSheet("background-color: #f0f0f0; padding: 8px; border-radius: 4px; border: 1px solid #ddd;");
+        measurementLabel->setObjectName("measuringLabel");
         layout->addWidget(measurementLabel, 1, 0);
 
         std::vector<QPushButton*> btns;
@@ -72,13 +72,13 @@ void SmartHomeDashboard::setupTypeDependentUIHandlers()
 void SmartHomeDashboard::addDevice(int id, DeviceType type)
 {
     QWidget* container = new QWidget();
-    container->setStyleSheet("border-radius: 4px; border: 1px solid #ccc");
+    container->setObjectName("deviceCard");
     QGridLayout* layout = new QGridLayout();
     QLabel* idLabel = new QLabel("id: " + QString::number(id));
-    idLabel->setStyleSheet("background-color: #f0f0f0; padding: 8px; border-radius: 4px; border: 1px solid #ddd;");
+    idLabel->setObjectName("deviceId");
     layout->addWidget(idLabel, 0, 0, 1, 2, Qt::AlignCenter);
     QLabel* measurementValue = new QLabel("None");
-    measurementValue->setStyleSheet("background-color: #f0f0f0; padding: 8px; border-radius: 4px; border: 1px solid #ddd;");
+    measurementValue->setObjectName("measuringValue");
     layout->addWidget(measurementValue, 1, 1);
     typeDependentUIHandlers[static_cast<int>(type)](layout, id - 1);
 
