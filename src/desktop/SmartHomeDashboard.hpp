@@ -29,11 +29,7 @@ private:
     QHBoxLayout* deviceLayout;
     std::vector<QWidget*> deviceContainers;
 
-    enum class DeviceLayoutItem
-    {
-        ID_LABEL = 0,
-        MEASURMENT_LABEL,
-        MESAURMENT_VALUE,
-        BUTTON_LAYOUT
-    };
+    using HandleTypeDependentUI = std::function<void(QGridLayout*)>;
+    std::vector<HandleTypeDependentUI> typeDependentUIHandlers;
+    void setupTypeDependentUIHandlers();
 };
