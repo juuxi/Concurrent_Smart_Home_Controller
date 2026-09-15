@@ -37,7 +37,7 @@ void DeviceServer::parseConfigFile(const std::string& filename)
     }
 }
 
-void DeviceServer::handlePayload(const int id, const int data)
+void DeviceServer::handlePayload(const size_t id, const int data)
 {
     int temperature = data;
     int lowest_temp = config.find("LOWEST_TEMPERATURE") != config.end() ? std::stoi(config.at("LOWEST_TEMPERATURE")) : INT_MIN;
@@ -50,7 +50,7 @@ void DeviceServer::handlePayload(const int id, const int data)
         BOOST_LOG_TRIVIAL(warning) << "[Server] Temperature " << temperature << " from device " << id 
             << " is below the lowest threshold of " << lowest_temp << ", setting to lowest threshold";
         
-        sendData(connectedDevices[id - 1], std::to_string(lowest_temp));
+        sendData(connectedDevices[id], std::to_string(lowest_temp));
         temperature = lowest_temp;
     }
     else if (temperature > highest_temp)
@@ -58,24 +58,24 @@ void DeviceServer::handlePayload(const int id, const int data)
         BOOST_LOG_TRIVIAL(warning) << "[Server] Temperature " << temperature << " from device " << id 
             << " is above the highest threshold of " << highest_temp << ", setting to highest threshold";
         
-        sendData(connectedDevices[id - 1], std::to_string(highest_temp));
+        sendData(connectedDevices[id], std::to_string(highest_temp));
         temperature = highest_temp;
     }
 
     if (dashboard)
-        dashboard->setDeviceState(id - 1, std::to_string(temperature));
+        dashboard->setDeviceState(id, std::to_string(temperature));
 }
 
-void DeviceServer::handlePayload(const int id, const std::string& data)
+void DeviceServer::handlePayload(const size_t id, const std::string& data)
 {
     BOOST_LOG_TRIVIAL(info) << "[Server] Receive Brightness: " << data << " from device " << id;
     if (dashboard)
-        dashboard->setDeviceState(id - 1, data);
+        dashboard->setDeviceState(id, data);
 }
 
 void DeviceServer::addDevice(std::shared_ptr<Device> device)
 {
-    connectedDevices.push_back(device);
+    connectedDevices[device->getId()] = device;
 }
 
 void DeviceServer::sendData(std::shared_ptr<Device> target, std::string data)
@@ -94,16 +94,16 @@ void DeviceServer::sendData(std::shared_ptr<Device> target, std::string data)
     BOOST_LOG_TRIVIAL(info) << "[Server] Send data \"" << data << "\" to " << target;
 }
 
-void DeviceServer::receiveData(const int id, DeviceData data)
+void DeviceServer::receiveData(const size_t id, DeviceData data)
 {
     std::visit([this, id](const auto& payload) {
         handlePayload(id, payload);
     }, data);
 }
 
-void DeviceServer::transmitData(const int index, std::string data)
+void DeviceServer::transmitData(const size_t id, std::string data)
 {
-    sendData(connectedDevices[index], data);
+    sendData(connectedDevices[id], data);
 }
 
 int DeviceServer::giveDeviceId(DeviceType type)  // should be protected when multithreading is implemented

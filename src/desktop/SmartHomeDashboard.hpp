@@ -5,7 +5,9 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QPushButton>
+
 #include <vector>
+#include <map>
 
 class DeviceServer;
 
@@ -21,28 +23,28 @@ class SmartHomeDashboard: public QWidget
 
 public:
     SmartHomeDashboard(QWidget* parent = nullptr);
-    void setDeviceState(int index, const std::string& text);
+    void setDeviceState(size_t id, const std::string& text);
     
-    void addDevice(int id, DeviceType type);
-    QWidget* getDevice(int index);
+    void addDevice(size_t id, DeviceType type);
+    QWidget* getDevice(size_t id);
     void setServer(std::shared_ptr<DeviceServer> newServer);
 
 private:
     std::shared_ptr<DeviceServer> server;
     QWidget* labelContainer;
     QHBoxLayout* deviceLayout;
-    std::vector<QWidget*> deviceContainers;
+    std::map<size_t, QWidget*> deviceContainers;
 
-    using HandleTypeDependentUI = std::function<void(QGridLayout*, int)>;
+    using HandleTypeDependentUI = std::function<void(QGridLayout*, size_t)>;
     std::vector<HandleTypeDependentUI> typeDependentUIHandlers;
     void setupTypeDependentUIHandlers();
 
-    QLabel* getValueLabel(int index);
-    int getCurrentDeviceTemp(int index);
+    QLabel* getValueLabel(size_t id);
+    int getCurrentDeviceTemp(size_t id);
 
-    void handleOffButton(int index);
-    void handleOnButton(int index);
+    void handleOffButton(size_t id);
+    void handleOnButton(size_t id);
 
-    void handleCoolButton(int index);
-    void handleWarmButton(int index);
+    void handleCoolButton(size_t id);
+    void handleWarmButton(size_t id);
 };
