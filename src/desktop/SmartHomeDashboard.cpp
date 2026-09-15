@@ -82,11 +82,12 @@ void SmartHomeDashboard::addDevice(size_t id, DeviceType type)
     QGridLayout* layout = new QGridLayout();
     QLabel* idLabel = new QLabel("id: " + QString::number(id));
     idLabel->setObjectName("deviceId");
-    layout->addWidget(idLabel, 0, 0, 1, 2, Qt::AlignCenter);
     QLabel* measurementValue = new QLabel("None");
     measurementValue->setObjectName("measuringValue");
-    layout->addWidget(measurementValue, 1, 1);
     typeDependentUIHandlers[static_cast<int>(type)](layout, id);
+
+    layout->addWidget(idLabel, 0, 0, 1, layout->columnCount(), Qt::AlignCenter);
+    layout->addWidget(measurementValue, 1, 1, 1, layout->columnCount() - 1);
 
     container->setLayout(layout);
 

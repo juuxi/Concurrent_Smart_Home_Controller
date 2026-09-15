@@ -10,6 +10,8 @@ QWidget#deviceCard {
     border: 1px solid #d6e0ee;
     border-radius: 10px;
     padding: 10px;
+    min-width: 200px;
+    min-height: 100px;
 }
 
 QWidget#deviceCard:hover {
