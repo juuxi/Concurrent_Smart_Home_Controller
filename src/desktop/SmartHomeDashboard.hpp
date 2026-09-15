@@ -43,6 +43,7 @@ private:
     int getCurrentDeviceTemp(size_t id);
 
     void handleOffButton(size_t id);
+    void handleHalfLightsButton(size_t id);
     void handleOnButton(size_t id);
 
     void handleCoolButton(size_t id);

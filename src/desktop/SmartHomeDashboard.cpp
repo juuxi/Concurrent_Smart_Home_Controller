@@ -36,6 +36,12 @@ void SmartHomeDashboard::setupTypeDependentUIHandlers()
             this->handleOffButton(device_id);
         });
 
+        auto half_lights_btn = new QPushButton("Half");
+        btns.push_back(half_lights_btn);
+        connect(half_lights_btn, &QPushButton::clicked, this, [this, device_id]() {
+            this->handleHalfLightsButton(device_id);
+        });
+
         auto on_btn = new QPushButton("On");
         btns.push_back(on_btn);
         connect(on_btn, &QPushButton::clicked, this, [this, device_id]() {
@@ -112,6 +118,12 @@ void SmartHomeDashboard::handleOnButton(size_t id)
 {
     if (server)
         server->transmitData(id, "full");
+}
+
+void SmartHomeDashboard::handleHalfLightsButton(size_t id)
+{
+    if (server)
+        server->transmitData(id, "50%");
 }
 
 void SmartHomeDashboard::handleOffButton(size_t id)
