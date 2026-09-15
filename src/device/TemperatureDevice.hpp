@@ -9,7 +9,7 @@ public:
     void receiveId() override;
 
     void sendData(DeviceData data) override;
-    void receiveData(std::string data) override;
+    void receiveData(DeviceData data) override;
 
     void changeTemperature(int value);
 

@@ -13,9 +13,19 @@ void TemperatureDevice::sendData(DeviceData data)
     server->receiveData(id, data);
 }
 
-void TemperatureDevice::receiveData(std::string data)
+void TemperatureDevice::receiveData(DeviceData data)
 {
-    std::cout << data << std::endl;
+    try
+    {
+        if (auto val = std::get_if<int>(&data))
+            temperature = *val;
+        else
+            throw std::bad_variant_access{};
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 }
 
 void TemperatureDevice::changeTemperature(int value)

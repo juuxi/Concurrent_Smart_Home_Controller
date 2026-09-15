@@ -13,9 +13,19 @@ void LightDevice::sendData(DeviceData data)
     server->receiveData(id, data);
 }
 
-void LightDevice::receiveData(std::string data)
+void LightDevice::receiveData(DeviceData data)
 {
-    std::cout << data << std::endl;
+    try
+    {
+        if (auto val = std::get_if<std::string>(&data))
+            brightness = *val;
+        else
+            throw std::bad_variant_access{};
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 }
 
 void LightDevice::changeBrightness(std::string value)

@@ -20,6 +20,6 @@ public:
     virtual void receiveId() = 0;
 
     virtual void sendData(DeviceData data) = 0;
-    virtual void receiveData(std::string data) = 0;
+    virtual void receiveData(DeviceData data) = 0;
     virtual ~Device() = default;
 };
