@@ -13,6 +13,7 @@
 #include <boost/log/utility/setup/file.hpp>
 
 #include <SmartHomeDashboard.hpp>
+#include <ThreadPool.hpp>
 
 class Device;
 
@@ -32,6 +33,8 @@ private:
     void parseConfigFile(const std::string& filename);
 
     void sendData(std::shared_ptr<Device> target, std::string data);
+
+    ThreadPool pool;
 public:
     DeviceServer();
     DeviceServer(SmartHomeDashboard* dashboard);

@@ -23,6 +23,7 @@ add_executable(smart_home_controller
     ${DEVICE}/LightDevice.cpp
     ${DEVICE}/TemperatureDevice.cpp
     ${DESKTOP}/SmartHomeDashboard.cpp
+    ${SERVER}/ThreadPool.cpp
 )
 
 add_custom_command(TARGET smart_home_controller POST_BUILD

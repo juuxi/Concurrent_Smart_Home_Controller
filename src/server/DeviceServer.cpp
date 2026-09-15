@@ -2,13 +2,13 @@
 #include <Device.hpp>
 #include <TemperatureDevice.hpp>
 
-DeviceServer::DeviceServer() : dashboard(nullptr), devicesAmount(0) 
+DeviceServer::DeviceServer() : dashboard(nullptr), devicesAmount(0), pool(8)
 {
     boost::log::add_file_log("server_logs.log");
     parseConfigFile("server_config.ini");
 }
 
-DeviceServer::DeviceServer(SmartHomeDashboard* dashboard) : dashboard(dashboard), devicesAmount(0) 
+DeviceServer::DeviceServer(SmartHomeDashboard* dashboard) : dashboard(dashboard), devicesAmount(0), pool(8) 
 {
     boost::log::add_file_log("server_logs.log");
     parseConfigFile("server_config.ini");
@@ -96,17 +96,21 @@ void DeviceServer::sendData(std::shared_ptr<Device> target, std::string data)
 
 void DeviceServer::receiveData(const size_t id, DeviceData data)
 {
-    std::visit([this, id](const auto& payload) {
-        handlePayload(id, payload);
-    }, data);
+    pool.enqueue([this, id, data](){
+        std::visit([this, id](const auto& payload) {
+            handlePayload(id, payload);
+        }, data);
+    });
 }
 
 void DeviceServer::transmitData(const size_t id, std::string data)
 {
-    sendData(connectedDevices[id], data);
+    pool.enqueue([this, id, data](){
+        sendData(connectedDevices[id], data);
+    });
 }
 
-int DeviceServer::giveDeviceId(DeviceType type)  // should be protected when multithreading is implemented
+int DeviceServer::giveDeviceId(DeviceType type)
 {
     devicesAmount++;
     if (dashboard)
