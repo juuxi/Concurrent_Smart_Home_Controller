@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
     dashboard.show();
 
     auto server = std::make_shared<DeviceServer>(&dashboard);
+    dashboard.setServer(server);
     auto lightDevice = std::make_shared<LightDevice>(server);
     lightDevice->receiveId();
     server->addDevice(lightDevice);

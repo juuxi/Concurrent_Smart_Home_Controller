@@ -18,7 +18,7 @@ void TemperatureDevice::receiveData(DeviceData data)
     try
     {
         if (auto val = std::get_if<int>(&data))
-            temperature = *val;
+            changeTemperature(*val);
         else
             throw std::bad_variant_access{};
     }

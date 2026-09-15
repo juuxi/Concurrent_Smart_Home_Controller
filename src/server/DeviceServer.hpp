@@ -29,6 +29,8 @@ private:
 
     std::unordered_map<std::string, std::string> config;
     void parseConfigFile(const std::string& filename);
+
+    void sendData(std::shared_ptr<Device> target, std::string data);
 public:
     DeviceServer();
     DeviceServer(SmartHomeDashboard* dashboard);
@@ -37,6 +39,6 @@ public:
 
     int giveDeviceId(DeviceType type);
     
-    void sendData(std::shared_ptr<Device> target, std::string data);
     void receiveData(const int id, DeviceData data);
+    void transmitData(const int index, std::string data);
 };

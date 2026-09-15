@@ -101,6 +101,11 @@ void DeviceServer::receiveData(const int id, DeviceData data)
     }, data);
 }
 
+void DeviceServer::transmitData(const int index, std::string data)
+{
+    sendData(connectedDevices[index], data);
+}
+
 int DeviceServer::giveDeviceId(DeviceType type)  // should be protected when multithreading is implemented
 {
     devicesAmount++;

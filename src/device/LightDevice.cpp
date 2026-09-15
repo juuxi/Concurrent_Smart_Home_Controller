@@ -18,7 +18,7 @@ void LightDevice::receiveData(DeviceData data)
     try
     {
         if (auto val = std::get_if<std::string>(&data))
-            brightness = *val;
+            changeBrightness(*val);
         else
             throw std::bad_variant_access{};
     }
@@ -31,5 +31,5 @@ void LightDevice::receiveData(DeviceData data)
 void LightDevice::changeBrightness(std::string value)
 {
     brightness = value;
-    sendData(value);
+    sendData(brightness);
 }
