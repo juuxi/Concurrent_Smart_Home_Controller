@@ -1,10 +1,16 @@
+#pragma once
+
 #include <Device.hpp>
 
 class TemperatureDevice: public Device
 {
     int temperature;
 public:
+    #ifndef TEST
     TemperatureDevice(std::shared_ptr<DeviceServer> server);
+    #else
+    TemperatureDevice(std::shared_ptr<MockDeviceServer> server);
+    #endif
 
     void receiveId() override;
 
