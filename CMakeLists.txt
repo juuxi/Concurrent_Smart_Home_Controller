@@ -54,10 +54,7 @@ target_link_libraries(smart_home_controller PRIVATE ${Boost_LIBRARIES})
 target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/desktop)
 target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/device)
 target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/server)
-target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/test)
 target_link_libraries(tests PRIVATE GTest::gmock_main)
 target_link_libraries(tests PRIVATE Qt5::Widgets)
-
-target_compile_definitions(tests PRIVATE TEST)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")

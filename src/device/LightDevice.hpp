@@ -7,11 +7,7 @@ class LightDevice: public Device
 {
     std::string brightness;
 public:
-    #ifndef TEST
-    LightDevice(std::shared_ptr<DeviceServer> server);
-    #else
-    LightDevice(std::shared_ptr<MockDeviceServer> server);
-    #endif
+    LightDevice(std::shared_ptr<IDeviceServer> server);
 
     void receiveId() override;
     

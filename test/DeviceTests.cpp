@@ -2,11 +2,13 @@
 #include <gmock/gmock.h>
 #include <LightDevice.hpp>
 #include <TemperatureDevice.hpp>
+#include <DeviceServerInterface.hpp>
 
-class MockDeviceServer {
+class MockDeviceServer: public IDeviceServer {
 public:
-    MOCK_METHOD(int, giveDeviceId, (DeviceType type));
-    MOCK_METHOD(void, receiveData, (const size_t id, DeviceData data));
+    MOCK_METHOD(int, giveDeviceId, (DeviceType type), (override));
+    MOCK_METHOD(void, receiveData, (const size_t id, DeviceData data), (override));
+    MOCK_METHOD(void, transmitData, (const size_t id, std::string data), (override));
 };
 
 TEST(LightDeviceTest, ReceiveId) {

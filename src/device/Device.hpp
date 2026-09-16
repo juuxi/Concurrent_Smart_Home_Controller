@@ -5,30 +5,18 @@
 #include <memory>
 
 #include <SmartHomeDashboard.hpp>
+#include <DeviceServerInterface.hpp>
 
-#ifndef TEST
-class DeviceServer;
-#else
-class MockDeviceServer;
-#endif
 
 using DeviceData = std::variant<std::string, int>;
 
 class Device
 {
 protected:
-    #ifndef TEST
-    std::shared_ptr<DeviceServer> server;
-    #else
-    std::shared_ptr<MockDeviceServer> server;
-    #endif
+    std::shared_ptr<IDeviceServer> server;
     size_t id;
 public:
-    #ifndef TEST
-    Device(std::shared_ptr<DeviceServer> server): server(server) {}
-    #else
-    Device(std::shared_ptr<MockDeviceServer> server): server(server) {}
-    #endif
+    Device(std::shared_ptr<IDeviceServer> server): server(server) {}
     virtual void receiveId() = 0;
     size_t getId() {return id;}
 

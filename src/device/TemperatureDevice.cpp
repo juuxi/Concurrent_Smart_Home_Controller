@@ -1,19 +1,7 @@
 #include <TemperatureDevice.hpp>
 #include <DeviceServer.hpp>
 
-#ifndef TEST
-TemperatureDevice::TemperatureDevice(std::shared_ptr<DeviceServer> server): Device(server) {}
-#else
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-class MockDeviceServer {
-public:
-    MOCK_METHOD(int, giveDeviceId, (DeviceType type));
-    MOCK_METHOD(void, receiveData, (const size_t id, DeviceData data));
-};
-
-TemperatureDevice::TemperatureDevice(std::shared_ptr<MockDeviceServer> server): Device(server) {};
-#endif
+TemperatureDevice::TemperatureDevice(std::shared_ptr<IDeviceServer> server): Device(server) {}
 
 void TemperatureDevice::receiveId()
 {

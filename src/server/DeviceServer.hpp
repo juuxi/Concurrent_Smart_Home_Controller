@@ -12,14 +12,12 @@
 #include <boost/log/trivial.hpp>
 #include <boost/log/utility/setup/file.hpp>
 
-#include <SmartHomeDashboard.hpp>
 #include <ThreadPool.hpp>
+#include <DeviceServerInterface.hpp>
 
 class Device;
 
-using DeviceData = std::variant<std::string, int>;
-
-class DeviceServer
+class DeviceServer : public IDeviceServer
 {
 private:
     SmartHomeDashboard* dashboard;
@@ -41,8 +39,8 @@ public:
 
     void addDevice(std::shared_ptr<Device> device);
 
-    int giveDeviceId(DeviceType type);
+    int giveDeviceId(DeviceType type) override;
     
-    void receiveData(const size_t id, DeviceData data);
-    void transmitData(const size_t id, std::string data);
+    void receiveData(const size_t id, DeviceData data) override;
+    void transmitData(const size_t id, std::string data) override;
 };

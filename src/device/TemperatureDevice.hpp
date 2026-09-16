@@ -6,11 +6,7 @@ class TemperatureDevice: public Device
 {
     int temperature;
 public:
-    #ifndef TEST
-    TemperatureDevice(std::shared_ptr<DeviceServer> server);
-    #else
-    TemperatureDevice(std::shared_ptr<MockDeviceServer> server);
-    #endif
+    TemperatureDevice(std::shared_ptr<IDeviceServer> server);
 
     void receiveId() override;
 
