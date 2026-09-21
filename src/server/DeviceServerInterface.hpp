@@ -1,8 +1,12 @@
 #pragma once
-#include <SmartHomeDashboard.hpp>
 
 using DeviceData = std::variant<std::string, int>;
 
+enum class DeviceType
+{
+    LIGHT_DEVICE = 0,
+    TEMPERATURE_DEVICE
+};
 
 class IDeviceServer {
 public:

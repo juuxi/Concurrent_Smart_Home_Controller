@@ -8,19 +8,24 @@
 #include <fstream>
 #include <map>
 
-#include <QWidget>
 #include <boost/log/trivial.hpp>
 #include <boost/log/utility/setup/file.hpp>
 
+#include <rabbitmq-c/amqp.h>
+#include <rabbitmq-c/tcp_socket.h>
+#include "utils.h"
+
 #include <ThreadPool.hpp>
 #include <DeviceServerInterface.hpp>
+#include <RabbitMqClient.hpp>
 
 class Device;
 
 class DeviceServer : public IDeviceServer
 {
 private:
-    SmartHomeDashboard* dashboard;
+    //std::jthread listenThread;
+
     int devicesAmount;
     std::map<size_t, std::shared_ptr<Device>> connectedDevices;
 
@@ -35,7 +40,6 @@ private:
     ThreadPool pool;
 public:
     DeviceServer();
-    DeviceServer(SmartHomeDashboard* dashboard);
 
     void addDevice(std::shared_ptr<Device> device);
 

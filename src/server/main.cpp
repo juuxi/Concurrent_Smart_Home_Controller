@@ -13,4 +13,8 @@ int main(int argc, char *argv[])
     temperatureDevice->receiveId();
     server->addDevice(temperatureDevice);
     temperatureDevice->changeTemperature(15);
+    while(true)
+    {
+        ;
+    }
 }

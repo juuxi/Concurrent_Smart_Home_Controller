@@ -2,13 +2,7 @@
 #include <Device.hpp>
 #include <TemperatureDevice.hpp>
 
-DeviceServer::DeviceServer() : dashboard(nullptr), devicesAmount(0), pool(8)
-{
-    boost::log::add_file_log("server_logs.log");
-    parseConfigFile("server_config.ini");
-}
-
-DeviceServer::DeviceServer(SmartHomeDashboard* dashboard) : dashboard(dashboard), devicesAmount(0), pool(8) 
+DeviceServer::DeviceServer() : devicesAmount(0), pool(8)
 {
     boost::log::add_file_log("server_logs.log");
     parseConfigFile("server_config.ini");
@@ -39,6 +33,7 @@ void DeviceServer::parseConfigFile(const std::string& filename)
 
 void DeviceServer::handlePayload(const size_t id, const int data)
 {
+    //sendDataToDashboard();
     int temperature = data;
     int lowest_temp = config.find("LOWEST_TEMPERATURE") != config.end() ? std::stoi(config.at("LOWEST_TEMPERATURE")) : INT_MIN;
     int highest_temp = config.find("HIGHEST_TEMPERATURE") != config.end() ? std::stoi(config.at("HIGHEST_TEMPERATURE")) : INT_MAX;;
@@ -62,15 +57,16 @@ void DeviceServer::handlePayload(const size_t id, const int data)
         temperature = highest_temp;
     }
 
-    if (dashboard)
-        dashboard->setDeviceState(id, std::to_string(temperature));
+    //if (dashboard)
+        //dashboard->setDeviceState(id, std::to_string(temperature));
 }
 
 void DeviceServer::handlePayload(const size_t id, const std::string& data)
 {
     BOOST_LOG_TRIVIAL(info) << "[Server] Receive Brightness: " << data << " from device " << id;
-    if (dashboard)
-        dashboard->setDeviceState(id, data);
+    //sendDataToDashboard();
+    //if (dashboard)
+        //dashboard->setDeviceState(id, data);
 }
 
 void DeviceServer::addDevice(std::shared_ptr<Device> device)
@@ -113,7 +109,11 @@ void DeviceServer::transmitData(const size_t id, std::string data)
 int DeviceServer::giveDeviceId(DeviceType type)
 {
     devicesAmount++;
-    if (dashboard)
-        dashboard->addDevice(devicesAmount, type);
+    std::string message = "{id: " + std::to_string(devicesAmount) + ", type: " + std::to_string(static_cast<int>(type)) + "}";
+    RabbitMqClient::sendData(config.at("DASHBOARD_HOST").c_str(), std::stoi(config.at("DASHBOARD_PORT")),
+                             config.at("DASHBOARD_EXCHANGE").c_str(), config.at("DASHBOARD_ROUTING_KEY").c_str(),
+                             message.c_str());
+    // if (dashboard)
+    //    dashboard->addDevice(devicesAmount, type);
     return devicesAmount;
 }
