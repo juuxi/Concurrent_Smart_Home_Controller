@@ -4,7 +4,6 @@
 #include <variant>
 #include <memory>
 
-#include <SmartHomeDashboard.hpp>
 #include <DeviceServerInterface.hpp>
 
 
