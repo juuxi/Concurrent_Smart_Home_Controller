@@ -1,6 +1,6 @@
 #include <RabbitMqClient.hpp>
 
-void RabbitMqClient::listen(char const* hostname, int port, char const* exchange, char const* bindingkey)
+void RabbitMqClient::listen(char const* hostname, int port, char const* exchange, char const* bindingkey, std::queue<std::string>& messageQueue)
 {
     int status;
     amqp_socket_t *socket = NULL;
@@ -72,14 +72,7 @@ void RabbitMqClient::listen(char const* hostname, int port, char const* exchange
             printf("----\n");
 
             std::string message(static_cast<char*>(envelope.message.body.bytes), envelope.message.body.len);
-            const auto id_begin = message.find("id:");
-            const auto type_begin = message.find("type:");
-
-            const auto id_start = id_begin + 3;
-            const auto type_start = type_begin + 5;
-
-            const std::size_t id = std::stoull(message.substr(id_start), nullptr);
-            const int type = std::stoi(message.substr(type_start), nullptr);
+            messageQueue.push(message);
 
             amqp_dump(envelope.message.body.bytes, envelope.message.body.len);
 

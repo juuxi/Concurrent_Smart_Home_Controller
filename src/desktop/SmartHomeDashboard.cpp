@@ -1,5 +1,4 @@
 #include <SmartHomeDashboard.hpp>
-#include <DeviceServer.hpp>
 
 SmartHomeDashboard::SmartHomeDashboard(QWidget* parent)
     : QWidget(parent)
@@ -19,6 +18,82 @@ SmartHomeDashboard::SmartHomeDashboard(QWidget* parent)
     setLayout(layout);
 
     setupTypeDependentUIHandlers();
+
+    connect(this, &SmartHomeDashboard::deviceReceived, this, &SmartHomeDashboard::addDevice);
+
+    parseConfigFile("dashboard_config.ini");
+    setupListenThread();
+    setupPollQueueThread();
+}
+
+void SmartHomeDashboard::setupListenThread()
+{
+    listenThread = std::jthread(
+        [config = config, messageQueue = std::ref(messageQueue)]()
+        {
+            try
+            {
+                RabbitMqClient::listen(config.at("SERVER_HOST").c_str(), std::stoi(config.at("SERVER_PORT")),
+                                       config.at("SERVER_EXCHANGE").c_str(), config.at("SERVER_ROUTING_KEY").c_str(), messageQueue);
+            }
+            catch (const std::exception& e)
+            {
+                std::cerr << "Listening thread failed: " << e.what() << '\n';
+            }
+        }
+    );
+}
+
+void SmartHomeDashboard::setupPollQueueThread()
+{
+    pollQueueThread = std::jthread(
+        [this]()
+        {
+            while (true)
+            {
+                if (!messageQueue.empty())
+                {
+                    auto message = messageQueue.front();
+                    messageQueue.pop();
+
+                    const auto id_begin = std::string(message).find("id:");
+                    const auto type_begin = std::string(message).find("type:");
+
+                    const auto id_start = id_begin + 3;
+                    const auto type_start = type_begin + 5;
+
+                    const std::size_t id = std::stoull(std::string(message).substr(id_start), nullptr);
+                    const int type = std::stoi(std::string(message).substr(type_start), nullptr);
+
+                    emit deviceReceived(static_cast<int>(id), type);
+                }
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+        }
+    );
+}
+
+void SmartHomeDashboard::parseConfigFile(const std::string& filename)
+{
+    std::ifstream file(filename);
+    std::string line;
+
+    if (!file.is_open()) {
+        std::cerr << "Failed to open config file at: " << filename << "\n";
+        return;
+    }
+
+    while (std::getline(file, line)) {
+        if (line.empty() || line[0] == '#') continue;
+
+        size_t delimiterPos = line.find('=');
+        if (delimiterPos != std::string::npos) {
+            std::string key = line.substr(0, delimiterPos);
+            std::string value = line.substr(delimiterPos + 1);
+            
+            config[key] = value;
+        }
+    }
 }
 
 void SmartHomeDashboard::setupTypeDependentUIHandlers()
@@ -75,7 +150,7 @@ void SmartHomeDashboard::setupTypeDependentUIHandlers()
     });
 }
 
-void SmartHomeDashboard::addDevice(size_t id, DeviceType type)
+void SmartHomeDashboard::addDevice(int id, int type)
 {
     QWidget* container = new QWidget();
     container->setObjectName("deviceCard");
@@ -84,7 +159,7 @@ void SmartHomeDashboard::addDevice(size_t id, DeviceType type)
     idLabel->setObjectName("deviceId");
     QLabel* measurementValue = new QLabel("None");
     measurementValue->setObjectName("measuringValue");
-    typeDependentUIHandlers[static_cast<int>(type)](layout, id);
+    typeDependentUIHandlers[type](layout, id);
 
     layout->addWidget(idLabel, 0, 0, 1, layout->columnCount(), Qt::AlignCenter);
     layout->addWidget(measurementValue, 1, 1, 1, layout->columnCount() - 1);
@@ -117,20 +192,23 @@ void SmartHomeDashboard::setServer(std::shared_ptr<DeviceServer> newServer)
 
 void SmartHomeDashboard::handleOnButton(size_t id)
 {
-    if (server)
-        server->transmitData(id, "full");
+    ;
+    // if (server)
+    //    server->transmitData(id, "full");
 }
 
 void SmartHomeDashboard::handleHalfLightsButton(size_t id)
 {
-    if (server)
-        server->transmitData(id, "50%");
+    ;
+    // if (server)
+    //    server->transmitData(id, "50%");
 }
 
 void SmartHomeDashboard::handleOffButton(size_t id)
 {
-    if (server)
-        server->transmitData(id, "lights off");
+    ;
+    // if (server)
+    //    server->transmitData(id, "lights off");
 }
 
 QLabel* SmartHomeDashboard::getValueLabel(size_t id)
@@ -155,13 +233,13 @@ int SmartHomeDashboard::getCurrentDeviceTemp(size_t id)
 void SmartHomeDashboard::handleCoolButton(size_t id)
 {
     int currTemp = getCurrentDeviceTemp(id);
-    if (server)
-        server->transmitData(id, std::to_string(currTemp - 1));
+    //if (server)
+    //    server->transmitData(id, std::to_string(currTemp - 1));
 }
 
 void SmartHomeDashboard::handleWarmButton(size_t id)
 {
     int currTemp = getCurrentDeviceTemp(id);
-    if (server)
-        server->transmitData(id, std::to_string(currTemp + 1));
+    //if (server)
+    //    server->transmitData(id, std::to_string(currTemp + 1));
 }
