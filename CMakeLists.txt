@@ -13,11 +13,15 @@ set(DESKTOP src/desktop)
 set(DEVICE src/device)
 set(SERVER src/server)
 set(COMMON src/common)
+set(PROTOCOL src/protocol)
 
 find_package(Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Boost REQUIRED COMPONENTS log log_setup)
 find_package(GTest REQUIRED)
+find_package(Protobuf REQUIRED)
 set(CMAKE_AUTOMOC ON)
+
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTOCOL}/Messages.proto)
 
 add_executable(smart_home_controller
     ${SERVER}/main.cpp
@@ -27,6 +31,7 @@ add_executable(smart_home_controller
     ${SERVER}/ThreadPool.cpp
     ${COMMON}/utils.c
     ${COMMON}/RabbitMqClient.cpp
+    ${PROTO_SRCS} ${PROTO_HDRS}
 )
 
 add_executable(dashboard
@@ -34,6 +39,7 @@ add_executable(dashboard
     ${DESKTOP}/SmartHomeDashboard.cpp
     ${COMMON}/utils.c
     ${COMMON}/RabbitMqClient.cpp
+    ${PROTO_SRCS} ${PROTO_HDRS}
 )
 
 add_subdirectory(rabbitmq-c)
@@ -69,11 +75,15 @@ target_include_directories(smart_home_controller PRIVATE ${CMAKE_CURRENT_SOURCE_
 target_include_directories(smart_home_controller PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/common)
 target_link_libraries(smart_home_controller PRIVATE ${Boost_LIBRARIES})
 target_link_libraries(smart_home_controller PRIVATE rabbitmq::rabbitmq)
+target_link_libraries(smart_home_controller PRIVATE ${Protobuf_LIBRARIES})
+target_include_directories(smart_home_controller PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 target_include_directories(dashboard PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/common)
 target_include_directories(dashboard PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/desktop)
 target_link_libraries(dashboard PRIVATE Qt5::Widgets)
 target_link_libraries(dashboard PRIVATE rabbitmq::rabbitmq)
+target_link_libraries(dashboard PRIVATE ${Protobuf_LIBRARIES})
+target_include_directories(dashboard PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 # target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/desktop)
 # target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/device)

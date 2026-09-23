@@ -1,0 +1,32 @@
+syntax = "proto2";
+
+package Messages;
+
+message UpdateDataMessage {
+    optional NewDeviceData new_device_data = 1;
+    optional DeviceMeasurement device_measurement = 2;
+}
+
+message NewDeviceData {
+    enum DeviceType {
+        LIGHT       = 1;
+        TEMPERATURE = 2;
+    }
+
+    required int32 id = 1;
+    required DeviceType type = 2;
+}
+
+message DeviceMeasurement {
+    required int32 id = 1;
+    optional LightDeviceMeasurement light_device_measurement = 2;
+    optional TemperatureDeviceMeasurement temperature_device_measurement = 3;
+}
+
+message LightDeviceMeasurement {
+    required string brightness = 1;
+}
+
+message TemperatureDeviceMeasurement {
+    required int32 temperature = 1;
+}

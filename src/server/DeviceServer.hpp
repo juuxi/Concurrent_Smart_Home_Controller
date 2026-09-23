@@ -15,6 +15,8 @@
 #include <rabbitmq-c/tcp_socket.h>
 #include "utils.h"
 
+#include "Messages.pb.h"
+
 #include <ThreadPool.hpp>
 #include <DeviceServerInterface.hpp>
 #include <RabbitMqClient.hpp>

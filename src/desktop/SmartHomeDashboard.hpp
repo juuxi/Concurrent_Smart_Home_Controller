@@ -10,6 +10,8 @@
 #include <rabbitmq-c/tcp_socket.h>
 #include "utils.h"
 
+#include "Messages.pb.h"
+
 #include <vector>
 #include <map>
 #include <thread>
