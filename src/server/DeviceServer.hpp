@@ -38,6 +38,7 @@ private:
     void parseConfigFile(const std::string& filename);
 
     void sendData(std::shared_ptr<Device> target, std::string data);
+    void sendMessageToDashboard(const Messages::UpdateDataMessage& message);
 
     ThreadPool pool;
 public:

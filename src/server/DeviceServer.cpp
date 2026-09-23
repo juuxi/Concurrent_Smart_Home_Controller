@@ -31,9 +31,19 @@ void DeviceServer::parseConfigFile(const std::string& filename)
     }
 }
 
+void DeviceServer::sendMessageToDashboard(const Messages::UpdateDataMessage& message)
+{
+    size_t size = message.ByteSizeLong();
+    char *buffer = new char[size];
+    message.SerializeToArray(buffer, size);
+
+    RabbitMqClient::sendData(config.at("DASHBOARD_HOST").c_str(), std::stoi(config.at("DASHBOARD_PORT")),
+                             config.at("DASHBOARD_EXCHANGE").c_str(), config.at("DASHBOARD_ROUTING_KEY").c_str(),
+                             buffer);
+}
+
 void DeviceServer::handlePayload(const size_t id, const int data)
 {
-    //sendDataToDashboard();
     int temperature = data;
     int lowest_temp = config.find("LOWEST_TEMPERATURE") != config.end() ? std::stoi(config.at("LOWEST_TEMPERATURE")) : INT_MIN;
     int highest_temp = config.find("HIGHEST_TEMPERATURE") != config.end() ? std::stoi(config.at("HIGHEST_TEMPERATURE")) : INT_MAX;;
@@ -56,17 +66,21 @@ void DeviceServer::handlePayload(const size_t id, const int data)
         sendData(connectedDevices[id], std::to_string(highest_temp));
         temperature = highest_temp;
     }
+    Messages::UpdateDataMessage message;
+    message.mutable_device_measurement()->set_id(id);
+    message.mutable_device_measurement()->mutable_temperature_device_measurement()->set_temperature(temperature);
 
-    //if (dashboard)
-        //dashboard->setDeviceState(id, std::to_string(temperature));
+    sendMessageToDashboard(message);
 }
 
 void DeviceServer::handlePayload(const size_t id, const std::string& data)
 {
     BOOST_LOG_TRIVIAL(info) << "[Server] Receive Brightness: " << data << " from device " << id;
-    //sendDataToDashboard();
-    //if (dashboard)
-        //dashboard->setDeviceState(id, data);
+    Messages::UpdateDataMessage message;
+    message.mutable_device_measurement()->set_id(id);
+    message.mutable_device_measurement()->mutable_light_device_measurement()->set_brightness(data);
+
+    sendMessageToDashboard(message);
 }
 
 void DeviceServer::addDevice(std::shared_ptr<Device> device)
@@ -113,14 +127,7 @@ int DeviceServer::giveDeviceId(DeviceType type)
     message.mutable_new_device_data()->set_id(devicesAmount);
     message.mutable_new_device_data()->set_type(Messages::NewDeviceData_DeviceType(static_cast<int>(type) + 1));  // Adjusting to 1-based enum in protobuf
 
-    size_t size = message.ByteSizeLong();
-    char *buffer = new char[size];
-    message.SerializeToArray(buffer, size);
+    sendMessageToDashboard(message);
 
-    RabbitMqClient::sendData(config.at("DASHBOARD_HOST").c_str(), std::stoi(config.at("DASHBOARD_PORT")),
-                             config.at("DASHBOARD_EXCHANGE").c_str(), config.at("DASHBOARD_ROUTING_KEY").c_str(),
-                             buffer);
-    // if (dashboard)
-    //    dashboard->addDevice(devicesAmount, type);
     return devicesAmount;
 }

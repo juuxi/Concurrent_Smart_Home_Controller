@@ -70,6 +70,21 @@ void SmartHomeDashboard::setupPollQueueThread()
 
                         emit deviceReceived(id, type);
                     }
+
+                    if (updateMessage.has_device_measurement())
+                    {
+                        int id = updateMessage.device_measurement().id();
+                        if (updateMessage.device_measurement().has_light_device_measurement())
+                        {
+                            const std::string brightness = updateMessage.device_measurement().light_device_measurement().brightness();
+                            setDeviceState(id, brightness);
+                        }
+                        else if (updateMessage.device_measurement().has_temperature_device_measurement())
+                        {
+                            const std::string temperature = std::to_string(updateMessage.device_measurement().temperature_device_measurement().temperature());
+                            setDeviceState(id, temperature);
+                        }
+                    }
                 }
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
