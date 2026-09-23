@@ -109,10 +109,17 @@ void DeviceServer::transmitData(const size_t id, std::string data)
 int DeviceServer::giveDeviceId(DeviceType type)
 {
     devicesAmount++;
-    std::string message = "{id: " + std::to_string(devicesAmount) + ", type: " + std::to_string(static_cast<int>(type)) + "}";
+    Messages::UpdateDataMessage message;
+    message.mutable_new_device_data()->set_id(devicesAmount);
+    message.mutable_new_device_data()->set_type(Messages::NewDeviceData_DeviceType(static_cast<int>(type) + 1));  // Adjusting to 1-based enum in protobuf
+
+    size_t size = message.ByteSizeLong();
+    char *buffer = new char[size];
+    message.SerializeToArray(buffer, size);
+
     RabbitMqClient::sendData(config.at("DASHBOARD_HOST").c_str(), std::stoi(config.at("DASHBOARD_PORT")),
                              config.at("DASHBOARD_EXCHANGE").c_str(), config.at("DASHBOARD_ROUTING_KEY").c_str(),
-                             message.c_str());
+                             buffer);
     // if (dashboard)
     //    dashboard->addDevice(devicesAmount, type);
     return devicesAmount;

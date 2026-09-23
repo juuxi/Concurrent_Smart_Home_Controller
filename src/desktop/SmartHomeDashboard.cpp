@@ -56,16 +56,20 @@ void SmartHomeDashboard::setupPollQueueThread()
                     auto message = messageQueue.front();
                     messageQueue.pop();
 
-                    const auto id_begin = std::string(message).find("id:");
-                    const auto type_begin = std::string(message).find("type:");
+                    Messages::UpdateDataMessage updateMessage;
+                    if (!updateMessage.ParseFromString(message))
+                    {
+                        std::cerr << "Failed to parse message from server: " << message << std::endl;
+                        continue;
+                    }
 
-                    const auto id_start = id_begin + 3;
-                    const auto type_start = type_begin + 5;
+                    if (updateMessage.has_new_device_data())
+                    {
+                        int id = updateMessage.new_device_data().id();
+                        int type = updateMessage.new_device_data().type() - 1;  // Adjusting from 1-based enum in protobuf
 
-                    const std::size_t id = std::stoull(std::string(message).substr(id_start), nullptr);
-                    const int type = std::stoi(std::string(message).substr(type_start), nullptr);
-
-                    emit deviceReceived(static_cast<int>(id), type);
+                        emit deviceReceived(id, type);
+                    }
                 }
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
