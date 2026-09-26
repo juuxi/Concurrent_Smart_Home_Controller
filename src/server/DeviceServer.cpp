@@ -1,11 +1,105 @@
 #include <DeviceServer.hpp>
 #include <Device.hpp>
 #include <TemperatureDevice.hpp>
+#include <LightDevice.hpp>
 
 DeviceServer::DeviceServer() : devicesAmount(0), pool(8)
 {
     boost::log::add_file_log("server_logs.log");
     parseConfigFile("server_config.ini");
+    setupListenThread();
+    setupPollQueueThread();
+}
+
+void DeviceServer::setupListenThread()
+{
+    listenThread = std::jthread(
+        [config = config, messageQueue = std::ref(messageQueue)]()
+        {
+            try
+            {
+                RabbitMqClient::listen(config.at("FROM_DASHBOARD_HOST").c_str(), std::stoi(config.at("FROM_DASHBOARD_PORT")),
+                                       config.at("FROM_DASHBOARD_EXCHANGE").c_str(), config.at("FROM_DASHBOARD_ROUTING_KEY").c_str(), 
+                                       config.at("FROM_DASHBOARD_QUEUE").c_str(), messageQueue);
+            }
+            catch (const std::exception& e)
+            {
+                std::cerr << "Listening thread failed: " << e.what() << '\n';
+            }
+        }
+    );
+}
+
+void DeviceServer::setupPollQueueThread()
+{
+    pollQueueThread = std::jthread(
+        [this]()
+        {
+            while (true)
+            {
+                if (!messageQueue.empty())
+                {
+                    auto message = messageQueue.front();
+                    messageQueue.pop();
+
+                    Messages::ChangeDataMessage changeDataMessage;
+                    if (!changeDataMessage.ParseFromString(message))
+                    {
+                        std::cerr << "Failed to parse message from dashboard: " << message << std::endl;
+                        continue;
+                    }
+                    
+                    if (changeDataMessage.has_change_temperature())
+                    {
+                        if (changeDataMessage.change_temperature().has_decrease_temperature())
+                        {
+                            int id = changeDataMessage.change_temperature().decrease_temperature().id();
+                            auto device = dynamic_cast<TemperatureDevice*>(connectedDevices[id].get());
+                            if (device)
+                                device->DecreaseTemperature(1);
+                            BOOST_LOG_TRIVIAL(info) << "[Server] Received request to decrease temperature of device " << id;
+                        }
+                        else if (changeDataMessage.change_temperature().has_increase_temperature())
+                        {
+                            int id = changeDataMessage.change_temperature().increase_temperature().id();
+                            auto device = dynamic_cast<TemperatureDevice*>(connectedDevices[id].get());
+                            if (device)
+                                device->IncreaseTemperature(1);
+                            BOOST_LOG_TRIVIAL(info) << "[Server] Received request to increase temperature of device " << id;
+                        }
+                    }
+                    else if (changeDataMessage.has_change_light())
+                    {
+                        if (changeDataMessage.change_light().has_light_on())
+                        {
+                            int id = changeDataMessage.change_light().light_on().id();
+                            auto device = dynamic_cast<LightDevice*>(connectedDevices[id].get());
+                            if (device)
+                                device->lightOn();
+                            BOOST_LOG_TRIVIAL(info) << "[Server] Received request to turn on light of device " << id;
+                        }
+                        else if (changeDataMessage.change_light().has_light_half())
+                        {
+                            int id = changeDataMessage.change_light().light_half().id();
+                            auto device = dynamic_cast<LightDevice*>(connectedDevices[id].get());
+                            if (device)
+                                device->lightHalf();
+                            BOOST_LOG_TRIVIAL(info) << "[Server] Received request to half light of device " << id;
+                        }
+                        else if (changeDataMessage.change_light().has_light_off())
+                        {
+                            int id = changeDataMessage.change_light().light_off().id();
+                            auto device = dynamic_cast<LightDevice*>(connectedDevices[id].get());
+                            if (device)
+                                device->lightOff();
+                            BOOST_LOG_TRIVIAL(info) << "[Server] Received request to turn off light of device " << id;
+                        }
+                    }
+                }
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            }
+        }
+    );
 }
 
 void DeviceServer::parseConfigFile(const std::string& filename)
@@ -37,8 +131,8 @@ void DeviceServer::sendMessageToDashboard(const Messages::UpdateDataMessage& mes
     char *buffer = new char[size];
     message.SerializeToArray(buffer, size);
 
-    RabbitMqClient::sendData(config.at("DASHBOARD_HOST").c_str(), std::stoi(config.at("DASHBOARD_PORT")),
-                             config.at("DASHBOARD_EXCHANGE").c_str(), config.at("DASHBOARD_ROUTING_KEY").c_str(),
+    RabbitMqClient::sendData(config.at("TO_DASHBOARD_HOST").c_str(), std::stoi(config.at("TO_DASHBOARD_PORT")),
+                             config.at("TO_DASHBOARD_EXCHANGE").c_str(), config.at("TO_DASHBOARD_ROUTING_KEY").c_str(),
                              buffer);
 }
 

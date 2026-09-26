@@ -33,8 +33,9 @@ void SmartHomeDashboard::setupListenThread()
         {
             try
             {
-                RabbitMqClient::listen(config.at("SERVER_HOST").c_str(), std::stoi(config.at("SERVER_PORT")),
-                                       config.at("SERVER_EXCHANGE").c_str(), config.at("SERVER_ROUTING_KEY").c_str(), messageQueue);
+                RabbitMqClient::listen(config.at("FROM_SERVER_HOST").c_str(), std::stoi(config.at("FROM_SERVER_PORT")),
+                                       config.at("FROM_SERVER_EXCHANGE").c_str(), config.at("FROM_SERVER_ROUTING_KEY").c_str(), 
+                                       config.at("FROM_SERVER_QUEUE").c_str(), messageQueue);
             }
             catch (const std::exception& e)
             {
@@ -169,6 +170,17 @@ void SmartHomeDashboard::setupTypeDependentUIHandlers()
     });
 }
 
+void SmartHomeDashboard::sendMessageToServer(const Messages::ChangeDataMessage& message)
+{
+    size_t size = message.ByteSizeLong();
+    char *buffer = new char[size];
+    message.SerializeToArray(buffer, size);
+
+    RabbitMqClient::sendData(config.at("TO_SERVER_HOST").c_str(), std::stoi(config.at("TO_SERVER_PORT")),
+                             config.at("TO_SERVER_EXCHANGE").c_str(), config.at("TO_SERVER_ROUTING_KEY").c_str(),
+                             buffer);
+}
+
 void SmartHomeDashboard::addDevice(int id, int type)
 {
     QWidget* container = new QWidget();
@@ -211,23 +223,26 @@ void SmartHomeDashboard::setServer(std::shared_ptr<DeviceServer> newServer)
 
 void SmartHomeDashboard::handleOnButton(size_t id)
 {
-    ;
-    // if (server)
-    //    server->transmitData(id, "full");
+    Messages::ChangeDataMessage message;
+    message.mutable_change_light()->mutable_light_on()->set_id(id);
+
+    sendMessageToServer(message);
 }
 
 void SmartHomeDashboard::handleHalfLightsButton(size_t id)
 {
-    ;
-    // if (server)
-    //    server->transmitData(id, "50%");
+    Messages::ChangeDataMessage message;
+    message.mutable_change_light()->mutable_light_half()->set_id(id);
+
+    sendMessageToServer(message);
 }
 
 void SmartHomeDashboard::handleOffButton(size_t id)
 {
-    ;
-    // if (server)
-    //    server->transmitData(id, "lights off");
+    Messages::ChangeDataMessage message;
+    message.mutable_change_light()->mutable_light_off()->set_id(id);
+
+    sendMessageToServer(message);
 }
 
 QLabel* SmartHomeDashboard::getValueLabel(size_t id)
@@ -242,23 +257,18 @@ QLabel* SmartHomeDashboard::getValueLabel(size_t id)
     return label;
 }
 
-int SmartHomeDashboard::getCurrentDeviceTemp(size_t id)
-{
-    auto label = getValueLabel(id);
-    int currTemp = std::stoi(label->text().toStdString());
-    return currTemp;
-}
-
 void SmartHomeDashboard::handleCoolButton(size_t id)
 {
-    int currTemp = getCurrentDeviceTemp(id);
-    //if (server)
-    //    server->transmitData(id, std::to_string(currTemp - 1));
+    Messages::ChangeDataMessage message;
+    message.mutable_change_temperature()->mutable_decrease_temperature()->set_id(id);
+
+    sendMessageToServer(message);
 }
 
 void SmartHomeDashboard::handleWarmButton(size_t id)
 {
-    int currTemp = getCurrentDeviceTemp(id);
-    //if (server)
-    //    server->transmitData(id, std::to_string(currTemp + 1));
+    Messages::ChangeDataMessage message;
+    message.mutable_change_temperature()->mutable_increase_temperature()->set_id(id);
+
+    sendMessageToServer(message);
 }

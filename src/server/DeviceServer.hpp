@@ -26,7 +26,12 @@ class Device;
 class DeviceServer : public IDeviceServer
 {
 private:
-    //std::jthread listenThread;
+    std::jthread listenThread;
+    std::jthread pollQueueThread;
+    std::queue<std::string> messageQueue;
+
+    void setupListenThread();
+    void setupPollQueueThread();
 
     int devicesAmount;
     std::map<size_t, std::shared_ptr<Device>> connectedDevices;

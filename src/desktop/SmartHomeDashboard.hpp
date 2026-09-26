@@ -47,6 +47,7 @@ private:
 
     void setupListenThread();
     void setupPollQueueThread();
+    void sendMessageToServer(const Messages::ChangeDataMessage& message);
 
     std::unordered_map<std::string, std::string> config;
 
@@ -60,7 +61,6 @@ private:
     void setupTypeDependentUIHandlers();
 
     QLabel* getValueLabel(size_t id);
-    int getCurrentDeviceTemp(size_t id);
 
     void handleOffButton(size_t id);
     void handleHalfLightsButton(size_t id);
