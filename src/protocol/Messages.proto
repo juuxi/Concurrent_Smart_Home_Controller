@@ -30,3 +30,35 @@ message LightDeviceMeasurement {
 message TemperatureDeviceMeasurement {
     required int32 temperature = 1;
 }
+
+message ChangeDataMessage {
+    required int32 id = 1;
+    optional ChangeTemperature change_temperature = 2;
+    optional ChangeLight change_light = 3;
+}
+
+message ChangeTemperature {
+    optional DecreaseTemperature decrease_temperature = 1;
+    optional IncreaseTemperature increase_temperature = 2;
+}
+
+message ChangeLight {
+    optional LightOn light_on = 1;
+    optional LightHalf light_half = 2;
+    optional LightOff light_off = 3;
+}
+
+message DecreaseTemperature {
+}
+
+message IncreaseTemperature {
+}
+
+message LightOn {
+}
+
+message LightHalf {
+}
+
+message LightOff {
+}
