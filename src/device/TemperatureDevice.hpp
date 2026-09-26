@@ -14,6 +14,8 @@ public:
     void receiveData(DeviceData data) override;
 
     void changeTemperature(int value);
+    void DecreaseTemperature(int value);
+    void IncreaseTemperature(int value);
 
     ~TemperatureDevice() = default;
 };

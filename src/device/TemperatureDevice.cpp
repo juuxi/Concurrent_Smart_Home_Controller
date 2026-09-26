@@ -33,3 +33,15 @@ void TemperatureDevice::changeTemperature(int value)
     temperature = value;
     sendData(temperature);
 }
+
+void TemperatureDevice::DecreaseTemperature(int value)
+{
+    temperature -= value;
+    sendData(temperature);
+}
+
+void TemperatureDevice::IncreaseTemperature(int value)
+{
+    temperature += value;
+    sendData(temperature);
+}

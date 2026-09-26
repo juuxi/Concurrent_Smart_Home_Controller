@@ -33,3 +33,21 @@ void LightDevice::changeBrightness(std::string value)
     brightness = value;
     sendData(brightness);
 }
+
+void LightDevice::lightOn()
+{
+    brightness = "full";
+    sendData(brightness);
+}
+
+void LightDevice::lightHalf()
+{
+    brightness = "50%";
+    sendData(brightness);
+}
+
+void LightDevice::lightOff()
+{
+    brightness = "off";
+    sendData(brightness);
+}

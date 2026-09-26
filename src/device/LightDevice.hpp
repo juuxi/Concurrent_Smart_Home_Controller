@@ -16,5 +16,9 @@ public:
 
     void changeBrightness(std::string value);
 
+    void lightOn();
+    void lightHalf();
+    void lightOff();
+
     ~LightDevice() = default;
 };
