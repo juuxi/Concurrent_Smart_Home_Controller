@@ -1,6 +1,6 @@
 #include <RabbitMqClient.hpp>
 
-void RabbitMqClient::listen(char const* hostname, int port, char const* exchange, char const* bindingkey, std::queue<std::string>& messageQueue)
+void RabbitMqClient::listen(char const* hostname, int port, char const* exchange, char const* bindingkey, char const* queueName, std::queue<std::string>& messageQueue)
 {
     int status;
     amqp_socket_t *socket = NULL;
@@ -28,7 +28,7 @@ void RabbitMqClient::listen(char const* hostname, int port, char const* exchange
 
     {
         amqp_queue_declare_ok_t *r = amqp_queue_declare(
-            conn, 1, amqp_cstring_bytes("request_queue"), 0, 0, 0, 1, amqp_empty_table);
+            conn, 1, amqp_cstring_bytes(queueName), 0, 0, 0, 1, amqp_empty_table);
         die_on_amqp_error(amqp_get_rpc_reply(conn), "Declaring queue");
         queuename = amqp_bytes_malloc_dup(r->queue);
         if (queuename.bytes == NULL) {
