@@ -59,22 +59,10 @@ void RabbitMqClient::listen(char const* hostname, int port, char const* exchange
                 break;
             }
 
-            printf("Delivery %u, exchange %.*s routingkey %.*s\n",
-                    (unsigned)envelope.delivery_tag, (int)envelope.exchange.len,
-                    (char *)envelope.exchange.bytes, (int)envelope.routing_key.len,
-                    (char *)envelope.routing_key.bytes);
-
-            if (envelope.message.properties._flags & AMQP_BASIC_CONTENT_TYPE_FLAG) {
-                printf("Content-type: %.*s\n",
-                        (int)envelope.message.properties.content_type.len,
-                        (char *)envelope.message.properties.content_type.bytes);
-            }
-            printf("----\n");
-
             std::string message(static_cast<char*>(envelope.message.body.bytes), envelope.message.body.len);
             messageQueue.push(message);
 
-            amqp_dump(envelope.message.body.bytes, envelope.message.body.len);
+            // amqp_dump(envelope.message.body.bytes, envelope.message.body.len);  logged in other parts if needed
 
             amqp_destroy_envelope(&envelope);
         }

@@ -5,7 +5,6 @@
 
 DeviceServer::DeviceServer() : devicesAmount(0), pool(8)
 {
-    boost::log::add_file_log("server_logs.log");
     parseConfigFile("server_config.ini");
     setupListenThread();
     setupPollQueueThread();
@@ -24,7 +23,7 @@ void DeviceServer::setupListenThread()
             }
             catch (const std::exception& e)
             {
-                std::cerr << "Listening thread failed: " << e.what() << '\n';
+                BOOST_LOG_TRIVIAL(error) << "Listening thread failed: " << e.what() << '\n';
             }
         }
     );
@@ -45,7 +44,7 @@ void DeviceServer::setupPollQueueThread()
                     Messages::ChangeDataMessage changeDataMessage;
                     if (!changeDataMessage.ParseFromString(message))
                     {
-                        std::cerr << "Failed to parse message from dashboard: " << message << std::endl;
+                        BOOST_LOG_TRIVIAL(error) << "Failed to parse message from dashboard: " << message << std::endl;
                         continue;
                     }
                     
@@ -108,7 +107,7 @@ void DeviceServer::parseConfigFile(const std::string& filename)
     std::string line;
 
     if (!file.is_open()) {
-        std::cerr << "Failed to open config file at: " << filename << "\n";
+        BOOST_LOG_TRIVIAL(error) << "Failed to open config file at: " << filename << "\n";
         return;
     }
 
