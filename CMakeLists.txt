@@ -62,11 +62,11 @@ add_custom_command(TARGET dashboard POST_BUILD
     "$<TARGET_FILE_DIR:smart_home_controller>/dashboard_config.ini"
 )
 
-# add_executable(tests 
-#     test/DeviceTests.cpp
-#     ${DEVICE}/LightDevice.cpp
-#     ${DEVICE}/TemperatureDevice.cpp
-# )
+add_executable(tests 
+    test/DeviceTests.cpp
+    ${DEVICE}/LightDevice.cpp
+    ${DEVICE}/TemperatureDevice.cpp
+)
 
 target_include_directories(smart_home_controller PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_include_directories(smart_home_controller PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/desktop)
@@ -85,10 +85,13 @@ target_link_libraries(dashboard PRIVATE rabbitmq::rabbitmq)
 target_link_libraries(dashboard PRIVATE ${Protobuf_LIBRARIES})
 target_include_directories(dashboard PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
-# target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/desktop)
-# target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/device)
-# target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/server)
-# target_link_libraries(tests PRIVATE GTest::gmock_main)
-# target_link_libraries(tests PRIVATE Qt5::Widgets)
+target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/desktop)
+target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/device)
+target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/server)
+target_include_directories(tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/common)
+target_link_libraries(tests PRIVATE GTest::gmock_main)
+target_link_libraries(tests PRIVATE Qt5::Widgets)
+target_link_libraries(tests PRIVATE rabbitmq::rabbitmq)
+target_include_directories(tests PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")

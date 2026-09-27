@@ -84,3 +84,41 @@ TEST(TemperatureDeviceTest, ReceiveData) {
     temperatureDevice.receiveId();
     temperatureDevice.receiveData(25);
 }
+
+TEST(TemperatureDeviceTest, IncreaseTemperature) {
+    auto mockServer = std::make_shared<MockDeviceServer>();
+    TemperatureDevice temperatureDevice(mockServer);
+
+    EXPECT_CALL(*mockServer, giveDeviceId(DeviceType::TEMPERATURE_DEVICE))
+        .Times(1)
+        .WillOnce(::testing::Return(1));
+
+    EXPECT_CALL(*mockServer, receiveData(1, DeviceData(20)))
+        .Times(1);
+
+    EXPECT_CALL(*mockServer, receiveData(1, DeviceData(22)))
+        .Times(1);
+
+    temperatureDevice.receiveId();
+    temperatureDevice.receiveData(20);
+    temperatureDevice.IncreaseTemperature(2);
+}
+
+TEST(TemperatureDeviceTest, DecreaseTemperature) {
+    auto mockServer = std::make_shared<MockDeviceServer>();
+    TemperatureDevice temperatureDevice(mockServer);
+
+    EXPECT_CALL(*mockServer, giveDeviceId(DeviceType::TEMPERATURE_DEVICE))
+        .Times(1)
+        .WillOnce(::testing::Return(1));
+
+    EXPECT_CALL(*mockServer, receiveData(1, DeviceData(20)))
+        .Times(1);
+
+    EXPECT_CALL(*mockServer, receiveData(1, DeviceData(18)))
+        .Times(1);
+
+    temperatureDevice.receiveId();
+    temperatureDevice.receiveData(20);
+    temperatureDevice.DecreaseTemperature(2);
+}
