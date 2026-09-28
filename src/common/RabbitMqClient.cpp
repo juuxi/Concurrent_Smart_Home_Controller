@@ -1,4 +1,6 @@
 #include <RabbitMqClient.hpp>
+#include "Messages.pb.h"
+
 
 void RabbitMqClient::listen(char const* hostname, int port, char const* exchange, char const* bindingkey, char const* queueName, std::queue<std::string>& messageQueue)
 {
@@ -77,7 +79,7 @@ void RabbitMqClient::listen(char const* hostname, int port, char const* exchange
     die_on_error(amqp_destroy_connection(conn), "Ending connection");
 }
 
-void RabbitMqClient::sendData(char const* hostname, int port, char const* exchange, char const* routingkey, char const* messagebody)
+void RabbitMqClient::sendData(char const* hostname, int port, char const* exchange, char const* routingkey, char const* messagebody, int messagelen)
 {
     int status;
     amqp_socket_t *socket = NULL;
@@ -115,12 +117,13 @@ void RabbitMqClient::sendData(char const* hostname, int port, char const* exchan
                         amqp_cstring_bytes("direct"), 0, 0, 0, 0, amqp_empty_table);
     die_on_amqp_error(amqp_get_rpc_reply(conn), "Declaring exchange");
 
-    {
+    amqp_bytes_t body;
+    body.bytes = static_cast<void*>(const_cast<char*>(messagebody));
+    body.len = messagelen;
     die_on_error(amqp_basic_publish(conn, 1, amqp_cstring_bytes(exchange),
                                     amqp_cstring_bytes(routingkey), 0, 0,
-                                    NULL, amqp_cstring_bytes(messagebody)),
+                                    NULL, body),
                     "Publishing");
-    }
 
     die_on_amqp_error(amqp_channel_close(conn, 1, AMQP_REPLY_SUCCESS),
                     "Closing channel");

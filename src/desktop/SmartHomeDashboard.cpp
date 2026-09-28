@@ -178,7 +178,7 @@ void SmartHomeDashboard::sendMessageToServer(const Messages::ChangeDataMessage& 
 
     RabbitMqClient::sendData(config.at("TO_SERVER_HOST").c_str(), std::stoi(config.at("TO_SERVER_PORT")),
                              config.at("TO_SERVER_EXCHANGE").c_str(), config.at("TO_SERVER_ROUTING_KEY").c_str(),
-                             buffer);
+                             buffer, size);
 }
 
 void SmartHomeDashboard::addDevice(int id, int type)
@@ -224,7 +224,8 @@ void SmartHomeDashboard::setServer(std::shared_ptr<DeviceServer> newServer)
 void SmartHomeDashboard::handleOnButton(size_t id)
 {
     Messages::ChangeDataMessage message;
-    message.mutable_change_light()->mutable_light_on()->set_id(id);
+    message.set_id(id);
+    message.mutable_change_light()->mutable_light_on();
 
     sendMessageToServer(message);
 }
@@ -232,7 +233,8 @@ void SmartHomeDashboard::handleOnButton(size_t id)
 void SmartHomeDashboard::handleHalfLightsButton(size_t id)
 {
     Messages::ChangeDataMessage message;
-    message.mutable_change_light()->mutable_light_half()->set_id(id);
+    message.set_id(id);
+    message.mutable_change_light()->mutable_light_half();
 
     sendMessageToServer(message);
 }
@@ -240,7 +242,8 @@ void SmartHomeDashboard::handleHalfLightsButton(size_t id)
 void SmartHomeDashboard::handleOffButton(size_t id)
 {
     Messages::ChangeDataMessage message;
-    message.mutable_change_light()->mutable_light_off()->set_id(id);
+    message.set_id(id);
+    message.mutable_change_light()->mutable_light_off();
 
     sendMessageToServer(message);
 }
@@ -260,7 +263,8 @@ QLabel* SmartHomeDashboard::getValueLabel(size_t id)
 void SmartHomeDashboard::handleCoolButton(size_t id)
 {
     Messages::ChangeDataMessage message;
-    message.mutable_change_temperature()->mutable_decrease_temperature()->set_id(id);
+    message.set_id(id);
+    message.mutable_change_temperature()->mutable_decrease_temperature();
 
     sendMessageToServer(message);
 }
@@ -268,7 +272,8 @@ void SmartHomeDashboard::handleCoolButton(size_t id)
 void SmartHomeDashboard::handleWarmButton(size_t id)
 {
     Messages::ChangeDataMessage message;
-    message.mutable_change_temperature()->mutable_increase_temperature()->set_id(id);
+    message.set_id(id);
+    message.mutable_change_temperature()->mutable_increase_temperature();
 
     sendMessageToServer(message);
 }

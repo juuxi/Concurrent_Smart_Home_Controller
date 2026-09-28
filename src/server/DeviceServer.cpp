@@ -47,12 +47,13 @@ void DeviceServer::setupPollQueueThread()
                         BOOST_LOG_TRIVIAL(error) << "Failed to parse message from dashboard: " << message << std::endl;
                         continue;
                     }
+
+                    int id = changeDataMessage.id();
                     
                     if (changeDataMessage.has_change_temperature())
                     {
                         if (changeDataMessage.change_temperature().has_decrease_temperature())
                         {
-                            int id = changeDataMessage.change_temperature().decrease_temperature().id();
                             auto device = dynamic_cast<TemperatureDevice*>(connectedDevices[id].get());
                             if (device)
                                 device->DecreaseTemperature(1);
@@ -60,7 +61,6 @@ void DeviceServer::setupPollQueueThread()
                         }
                         else if (changeDataMessage.change_temperature().has_increase_temperature())
                         {
-                            int id = changeDataMessage.change_temperature().increase_temperature().id();
                             auto device = dynamic_cast<TemperatureDevice*>(connectedDevices[id].get());
                             if (device)
                                 device->IncreaseTemperature(1);
@@ -71,7 +71,6 @@ void DeviceServer::setupPollQueueThread()
                     {
                         if (changeDataMessage.change_light().has_light_on())
                         {
-                            int id = changeDataMessage.change_light().light_on().id();
                             auto device = dynamic_cast<LightDevice*>(connectedDevices[id].get());
                             if (device)
                                 device->lightOn();
@@ -79,7 +78,6 @@ void DeviceServer::setupPollQueueThread()
                         }
                         else if (changeDataMessage.change_light().has_light_half())
                         {
-                            int id = changeDataMessage.change_light().light_half().id();
                             auto device = dynamic_cast<LightDevice*>(connectedDevices[id].get());
                             if (device)
                                 device->lightHalf();
@@ -87,7 +85,6 @@ void DeviceServer::setupPollQueueThread()
                         }
                         else if (changeDataMessage.change_light().has_light_off())
                         {
-                            int id = changeDataMessage.change_light().light_off().id();
                             auto device = dynamic_cast<LightDevice*>(connectedDevices[id].get());
                             if (device)
                                 device->lightOff();
@@ -132,7 +129,7 @@ void DeviceServer::sendMessageToDashboard(const Messages::UpdateDataMessage& mes
 
     RabbitMqClient::sendData(config.at("TO_DASHBOARD_HOST").c_str(), std::stoi(config.at("TO_DASHBOARD_PORT")),
                              config.at("TO_DASHBOARD_EXCHANGE").c_str(), config.at("TO_DASHBOARD_ROUTING_KEY").c_str(),
-                             buffer);
+                             buffer, size);
 }
 
 void DeviceServer::handlePayload(const size_t id, const int data)
