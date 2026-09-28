@@ -35,7 +35,6 @@ class SmartHomeDashboard: public QWidget
 
 public:
     SmartHomeDashboard(QWidget* parent = nullptr);
-    void setDeviceState(size_t id, const std::string& text);
     
     QWidget* getDevice(size_t id);
     void setServer(std::shared_ptr<DeviceServer> newServer);
@@ -73,6 +72,8 @@ private:
 
 signals:
     void deviceReceived(int id, int type);
+    void deviceStateReceived(int id, const QString text);
 public slots:
     void addDevice(int id, int type);
+    void setDeviceState(int id, const QString text);
 };

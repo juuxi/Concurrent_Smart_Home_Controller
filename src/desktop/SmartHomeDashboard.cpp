@@ -20,6 +20,7 @@ SmartHomeDashboard::SmartHomeDashboard(QWidget* parent)
     setupTypeDependentUIHandlers();
 
     connect(this, &SmartHomeDashboard::deviceReceived, this, &SmartHomeDashboard::addDevice);
+    connect(this, &SmartHomeDashboard::deviceStateReceived, this, &SmartHomeDashboard::setDeviceState);
 
     parseConfigFile("dashboard_config.ini");
     setupListenThread();
@@ -78,12 +79,12 @@ void SmartHomeDashboard::setupPollQueueThread()
                         if (updateMessage.device_measurement().has_light_device_measurement())
                         {
                             const std::string brightness = updateMessage.device_measurement().light_device_measurement().brightness();
-                            setDeviceState(id, brightness);
+                            emit deviceStateReceived(id, QString::fromStdString(brightness));
                         }
                         else if (updateMessage.device_measurement().has_temperature_device_measurement())
                         {
                             const std::string temperature = std::to_string(updateMessage.device_measurement().temperature_device_measurement().temperature());
-                            setDeviceState(id, temperature);
+                            emit deviceStateReceived(id, QString::fromStdString(temperature));
                         }
                     }
                 }
@@ -209,11 +210,11 @@ QWidget* SmartHomeDashboard::getDevice(size_t id)
     return nullptr;
 }
 
-void SmartHomeDashboard::setDeviceState(size_t id, const std::string& text)
+void SmartHomeDashboard::setDeviceState(int id, const QString text)
 {
     auto label = getValueLabel(id);
     if (label)
-        label->setText(QString::fromStdString(text));
+        label->setText(text);
 }
 
 void SmartHomeDashboard::setServer(std::shared_ptr<DeviceServer> newServer)
