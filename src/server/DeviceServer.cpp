@@ -215,7 +215,7 @@ int DeviceServer::giveDeviceId(DeviceType type)
     devicesAmount++;
     Messages::UpdateDataMessage message;
     message.mutable_new_device_data()->set_id(devicesAmount);
-    message.mutable_new_device_data()->set_type(Messages::NewDeviceData_DeviceType(static_cast<int>(type) + 1));  // Adjusting to 1-based enum in protobuf
+    message.mutable_new_device_data()->set_type(Messages::NewDeviceData_DeviceType(static_cast<int>(type)));
 
     sendMessageToDashboard(message);
 

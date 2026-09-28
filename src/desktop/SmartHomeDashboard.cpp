@@ -67,7 +67,7 @@ void SmartHomeDashboard::setupPollQueueThread()
                     if (updateMessage.has_new_device_data())
                     {
                         int id = updateMessage.new_device_data().id();
-                        int type = updateMessage.new_device_data().type() - 1;  // Adjusting from 1-based enum in protobuf
+                        int type = updateMessage.new_device_data().type();
 
                         emit deviceReceived(id, type);
                     }

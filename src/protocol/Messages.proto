@@ -9,8 +9,8 @@ message UpdateDataMessage {
 
 message NewDeviceData {
     enum DeviceType {
-        LIGHT       = 1;
-        TEMPERATURE = 2;
+        LIGHT       = 0;
+        TEMPERATURE = 1;
     }
 
     required int32 id = 1;
