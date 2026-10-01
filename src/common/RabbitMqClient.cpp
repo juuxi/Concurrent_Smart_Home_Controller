@@ -13,14 +13,12 @@ void RabbitMqClient::listen(char const* hostname, int port, char const* exchange
     conn = amqp_new_connection();
 
     socket = amqp_tcp_socket_new(conn);
-    if (!socket) {
+    if (!socket)
         die("creating TCP socket");
-    }
 
     status = amqp_socket_open(socket, hostname, port);
-    if (status) {
+    if (status)
         die("opening TCP socket");
-    }
 
     die_on_amqp_error(amqp_login(conn, "/", 0, 131072, 0, AMQP_SASL_METHOD_PLAIN,
                       "guest", "guest"),
@@ -28,15 +26,13 @@ void RabbitMqClient::listen(char const* hostname, int port, char const* exchange
     amqp_channel_open(conn, 1);
     die_on_amqp_error(amqp_get_rpc_reply(conn), "Opening channel");
 
-    {
-        amqp_queue_declare_ok_t *r = amqp_queue_declare(
-            conn, 1, amqp_cstring_bytes(queueName), 0, 0, 0, 1, amqp_empty_table);
-        die_on_amqp_error(amqp_get_rpc_reply(conn), "Declaring queue");
-        queuename = amqp_bytes_malloc_dup(r->queue);
-        if (queuename.bytes == NULL) {
-            fprintf(stderr, "Out of memory while copying queue name");
-        }
-    }
+    amqp_queue_declare_ok_t *r = amqp_queue_declare(
+        conn, 1, amqp_cstring_bytes(queueName), 0, 0, 0, 1, amqp_empty_table);
+    die_on_amqp_error(amqp_get_rpc_reply(conn), "Declaring queue");
+    queuename = amqp_bytes_malloc_dup(r->queue);
+    if (queuename.bytes == NULL)
+        fprintf(stderr, "Out of memory while copying queue name");
+    
     amqp_exchange_declare(conn, 1, amqp_cstring_bytes(exchange),
                           amqp_cstring_bytes("direct"), 0, 0, 0, 0, amqp_empty_table);
     die_on_amqp_error(amqp_get_rpc_reply(conn), "Declaring exchange");
@@ -50,16 +46,16 @@ void RabbitMqClient::listen(char const* hostname, int port, char const* exchange
     die_on_amqp_error(amqp_get_rpc_reply(conn), "Consuming");
 
     {
-        for(;;) {
+        for (;;) 
+        {
             amqp_rpc_reply_t res;
             amqp_envelope_t envelope;
             amqp_maybe_release_buffers(conn);
 
             res = amqp_consume_message(conn, &envelope, NULL, 0);
 
-            if (AMQP_RESPONSE_NORMAL != res.reply_type) {
+            if (AMQP_RESPONSE_NORMAL != res.reply_type)
                 break;
-            }
 
             std::string message(static_cast<char*>(envelope.message.body.bytes), envelope.message.body.len);
             messageQueue.push(message);
@@ -88,12 +84,12 @@ void RabbitMqClient::sendData(char const* hostname, int port, char const* exchan
     conn = amqp_new_connection();
 
     socket = amqp_tcp_socket_new(conn);
-    if (!socket) {
+    if (!socket)
         die("creating TCP socket");
-    }
 
     status = amqp_socket_open(socket, hostname, port);
-    if (status != AMQP_STATUS_OK) {
+    if (status != AMQP_STATUS_OK) 
+    {
         fprintf(stderr,
                 "Cannot connect to %s:%d: status=%d (%s), errno=%d (%s)\n",
                 hostname,

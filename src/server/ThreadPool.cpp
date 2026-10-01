@@ -2,16 +2,18 @@
 
 ThreadPool::ThreadPool(size_t numThreads)
 {
-    for (size_t i = 0; i < numThreads; ++i) {
+    for (size_t i = 0; i < numThreads; ++i) 
+    {
         workersContainer.emplace_back([this] {
-            while (true) {
+            while (true) 
+            {
                 std::function<void()> task;
                 {
                     std::unique_lock lock(mtx);
                     cv.wait(lock, [this] {
-                        return is_stopped || !tasksQueue.empty();
+                        return isStopped || !tasksQueue.empty();
                     });
-                    if (is_stopped && tasksQueue.empty()) 
+                    if (isStopped && tasksQueue.empty()) 
                         return;
                     task = std::move(tasksQueue.front());
                     tasksQueue.pop();
@@ -33,7 +35,7 @@ void ThreadPool::enqueue(std::function<void()> task)
 
 ThreadPool::~ThreadPool()
  {
-    is_stopped = true;
+    isStopped = true;
     cv.notify_all();
     for (auto& t : workersContainer)
         t.join();

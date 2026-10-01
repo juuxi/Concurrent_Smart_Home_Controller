@@ -22,7 +22,7 @@ void LightDevice::receiveData(DeviceData data)
         else
             throw std::bad_variant_access{};
     }
-    catch(const std::exception& e)
+    catch (const std::exception& e)
     {
         std::cerr << e.what() << '\n';
     }

@@ -101,7 +101,7 @@ TEST(TemperatureDeviceTest, IncreaseTemperature) {
 
     temperatureDevice.receiveId();
     temperatureDevice.receiveData(20);
-    temperatureDevice.IncreaseTemperature(2);
+    temperatureDevice.increaseTemperature(2);
 }
 
 TEST(TemperatureDeviceTest, DecreaseTemperature) {
@@ -120,5 +120,5 @@ TEST(TemperatureDeviceTest, DecreaseTemperature) {
 
     temperatureDevice.receiveId();
     temperatureDevice.receiveData(20);
-    temperatureDevice.DecreaseTemperature(2);
+    temperatureDevice.decreaseTemperature(2);
 }

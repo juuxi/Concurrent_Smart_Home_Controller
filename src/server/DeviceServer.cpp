@@ -56,14 +56,14 @@ void DeviceServer::setupPollQueueThread()
                         {
                             auto device = dynamic_cast<TemperatureDevice*>(connectedDevices[id].get());
                             if (device)
-                                device->DecreaseTemperature(1);
+                                device->decreaseTemperature(1);
                             BOOST_LOG_TRIVIAL(info) << "[Server] Received request to decrease temperature of device " << id;
                         }
                         else if (changeDataMessage.change_temperature().has_increase_temperature())
                         {
                             auto device = dynamic_cast<TemperatureDevice*>(connectedDevices[id].get());
                             if (device)
-                                device->IncreaseTemperature(1);
+                                device->increaseTemperature(1);
                             BOOST_LOG_TRIVIAL(info) << "[Server] Received request to increase temperature of device " << id;
                         }
                     }
@@ -103,16 +103,20 @@ void DeviceServer::parseConfigFile(const std::string& filename)
     std::ifstream file(filename);
     std::string line;
 
-    if (!file.is_open()) {
+    if (!file.is_open()) 
+    {
         BOOST_LOG_TRIVIAL(error) << "Failed to open config file at: " << filename << "\n";
         return;
     }
 
-    while (std::getline(file, line)) {
-        if (line.empty() || line[0] == '#') continue;
+    while (std::getline(file, line)) 
+    {
+        if (line.empty() || line[0] == '#') 
+            continue;
 
         size_t delimiterPos = line.find('=');
-        if (delimiterPos != std::string::npos) {
+        if (delimiterPos != std::string::npos) 
+        {
             std::string key = line.substr(0, delimiterPos);
             std::string value = line.substr(delimiterPos + 1);
             
@@ -135,26 +139,26 @@ void DeviceServer::sendMessageToDashboard(const Messages::UpdateDataMessage& mes
 void DeviceServer::handlePayload(const size_t id, const int data)
 {
     int temperature = data;
-    int lowest_temp = config.find("LOWEST_TEMPERATURE") != config.end() ? std::stoi(config.at("LOWEST_TEMPERATURE")) : INT_MIN;
-    int highest_temp = config.find("HIGHEST_TEMPERATURE") != config.end() ? std::stoi(config.at("HIGHEST_TEMPERATURE")) : INT_MAX;;
+    int lowestTemp = config.find("LOWEST_TEMPERATURE") != config.end() ? std::stoi(config.at("LOWEST_TEMPERATURE")) : INT_MIN;
+    int highestTemp = config.find("HIGHEST_TEMPERATURE") != config.end() ? std::stoi(config.at("HIGHEST_TEMPERATURE")) : INT_MAX;;
     
     BOOST_LOG_TRIVIAL(info) << "[Server] " << "Receive Temperature: " << data << " from device " << id;
     
-    if (temperature < lowest_temp)
+    if (temperature < lowestTemp)
     {
         BOOST_LOG_TRIVIAL(warning) << "[Server] Temperature " << temperature << " from device " << id 
-            << " is below the lowest threshold of " << lowest_temp << ", setting to lowest threshold";
+            << " is below the lowest threshold of " << lowestTemp << ", setting to lowest threshold";
         
-        sendData(connectedDevices[id], std::to_string(lowest_temp));
-        temperature = lowest_temp;
+        sendData(connectedDevices[id], std::to_string(lowestTemp));
+        temperature = lowestTemp;
     }
-    else if (temperature > highest_temp)
+    else if (temperature > highestTemp)
     {
         BOOST_LOG_TRIVIAL(warning) << "[Server] Temperature " << temperature << " from device " << id 
-            << " is above the highest threshold of " << highest_temp << ", setting to highest threshold";
+            << " is above the highest threshold of " << highestTemp << ", setting to highest threshold";
         
-        sendData(connectedDevices[id], std::to_string(highest_temp));
-        temperature = highest_temp;
+        sendData(connectedDevices[id], std::to_string(highestTemp));
+        temperature = highestTemp;
     }
     Messages::UpdateDataMessage message;
     message.mutable_device_measurement()->set_id(id);
@@ -180,15 +184,15 @@ void DeviceServer::addDevice(std::shared_ptr<Device> device)
 
 void DeviceServer::sendData(std::shared_ptr<Device> target, std::string data)
 {
-    try {
-        if (dynamic_cast<TemperatureDevice*>(target.get())) {
+    try 
+    {
+        if (dynamic_cast<TemperatureDevice*>(target.get()))
             target->receiveData(std::stoi(data));
-        }
-        else {
+        else
             target->receiveData(data);
-        }
     }
-    catch (const std::exception& e) {
+    catch (const std::exception& e) 
+    {
         BOOST_LOG_TRIVIAL(error) << "[Server] Failed to send data to device: " << e.what();
     }
     BOOST_LOG_TRIVIAL(info) << "[Server] Send data \"" << data << "\" to " << target;

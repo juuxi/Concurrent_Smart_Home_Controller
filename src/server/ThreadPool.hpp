@@ -11,7 +11,7 @@ class ThreadPool {
     std::queue<std::function<void()>> tasksQueue;
     std::mutex mtx;
     std::condition_variable cv;
-    std::atomic<bool> is_stopped{false};
+    std::atomic<bool> isStopped{false};
 
 public:
     explicit ThreadPool(size_t numThreads = std::thread::hardware_concurrency());

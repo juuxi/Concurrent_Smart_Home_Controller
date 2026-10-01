@@ -119,51 +119,51 @@ void SmartHomeDashboard::parseConfigFile(const std::string& filename)
 
 void SmartHomeDashboard::setupTypeDependentUIHandlers()
 {
-    typeDependentUIHandlers.push_back([this](QGridLayout* layout, size_t device_id) {
+    typeDependentUIHandlers.push_back([this](QGridLayout* layout, size_t deviceId) {
         std::string text = "Brightness:";
         QLabel* measurementLabel = new QLabel(QString::fromStdString(text));
         measurementLabel->setObjectName("measuringLabel");
         layout->addWidget(measurementLabel, 1, 0);
 
         std::vector<QPushButton*> btns;
-        auto off_btn = new QPushButton("Off");
-        btns.push_back(off_btn);
-        connect(off_btn, &QPushButton::clicked, this, [this, device_id]() {
-            this->handleOffButton(device_id);
+        auto offBtn = new QPushButton("Off");
+        btns.push_back(offBtn);
+        connect(offBtn, &QPushButton::clicked, this, [this, deviceId]() {
+            this->handleOffButton(deviceId);
         });
 
-        auto half_lights_btn = new QPushButton("Half");
-        btns.push_back(half_lights_btn);
-        connect(half_lights_btn, &QPushButton::clicked, this, [this, device_id]() {
-            this->handleHalfLightsButton(device_id);
+        auto halfLightsBtn = new QPushButton("Half");
+        btns.push_back(halfLightsBtn);
+        connect(halfLightsBtn, &QPushButton::clicked, this, [this, deviceId]() {
+            this->handleHalfLightsButton(deviceId);
         });
 
-        auto on_btn = new QPushButton("On");
-        btns.push_back(on_btn);
-        connect(on_btn, &QPushButton::clicked, this, [this, device_id]() {
-            this->handleOnButton(device_id);
+        auto onBtn = new QPushButton("On");
+        btns.push_back(onBtn);
+        connect(onBtn, &QPushButton::clicked, this, [this, deviceId]() {
+            this->handleOnButton(deviceId);
         });
 
         for (int i = 0; i < btns.size(); i++)
             layout->addWidget(btns[i], 2, i);
     });
 
-    typeDependentUIHandlers.push_back([this](QGridLayout* layout, size_t device_id) {
+    typeDependentUIHandlers.push_back([this](QGridLayout* layout, size_t deviceId) {
         std::string text = "Temperature:";
         QLabel* measurementLabel = new QLabel(QString::fromStdString(text));
         measurementLabel->setObjectName("measuringLabel");
         layout->addWidget(measurementLabel, 1, 0);
 
         std::vector<QPushButton*> btns;
-        auto cool_btn = new QPushButton("Cool");
-        btns.push_back(cool_btn);
-        connect(cool_btn, &QPushButton::clicked, this, [this, device_id]() {
-            this->handleCoolButton(device_id);
+        auto coolBtn = new QPushButton("Cool");
+        btns.push_back(coolBtn);
+        connect(coolBtn, &QPushButton::clicked, this, [this, deviceId]() {
+            this->handleCoolButton(deviceId);
         });
-        auto warm_btn = new QPushButton("Warm");
-        btns.push_back(warm_btn);
-        connect(warm_btn, &QPushButton::clicked, this, [this, device_id]() {
-            this->handleWarmButton(device_id);
+        auto warmBtn = new QPushButton("Warm");
+        btns.push_back(warmBtn);
+        connect(warmBtn, &QPushButton::clicked, this, [this, deviceId]() {
+            this->handleWarmButton(deviceId);
         });
 
         for (int i = 0; i < btns.size(); i++)

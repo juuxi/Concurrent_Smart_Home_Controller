@@ -22,7 +22,7 @@ void TemperatureDevice::receiveData(DeviceData data)
         else
             throw std::bad_variant_access{};
     }
-    catch(const std::exception& e)
+    catch (const std::exception& e)
     {
         std::cerr << e.what() << '\n';
     }
@@ -34,13 +34,13 @@ void TemperatureDevice::changeTemperature(int value)
     sendData(temperature);
 }
 
-void TemperatureDevice::DecreaseTemperature(int value)
+void TemperatureDevice::decreaseTemperature(int value)
 {
     temperature -= value;
     sendData(temperature);
 }
 
-void TemperatureDevice::IncreaseTemperature(int value)
+void TemperatureDevice::increaseTemperature(int value)
 {
     temperature += value;
     sendData(temperature);
