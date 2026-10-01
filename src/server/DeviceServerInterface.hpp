@@ -8,7 +8,7 @@ enum class DeviceType
     TEMPERATURE_DEVICE
 };
 
-class IDeviceServer {
+class IDeviceServer : public std::enable_shared_from_this<IDeviceServer> {
 public:
     virtual ~IDeviceServer() = default;
     virtual int giveDeviceId(DeviceType type) = 0;
