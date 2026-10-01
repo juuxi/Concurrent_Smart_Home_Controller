@@ -6,25 +6,76 @@ SmartHomeDashboard::SmartHomeDashboard(QWidget* parent)
     setWindowState(Qt::WindowMaximized);
     setWindowTitle("Smart Home Dashboard");
 
-    labelContainer = new QWidget(this);
-    deviceLayout = new QHBoxLayout(labelContainer);
-    deviceLayout->setContentsMargins(10, 10, 10, 10);
-    deviceLayout->setSpacing(10);
-    deviceLayout->addStretch();
-
-    QVBoxLayout* layout = new QVBoxLayout(this);
-    layout->addWidget(labelContainer);
-    layout->addStretch();
-    setLayout(layout);
-
+    setupUI();
     setupTypeDependentUIHandlers();
 
     connect(this, &SmartHomeDashboard::deviceReceived, this, &SmartHomeDashboard::addDevice);
     connect(this, &SmartHomeDashboard::deviceStateReceived, this, &SmartHomeDashboard::setDeviceState);
+    connect(addDeviceBtn, &QPushButton::clicked, this, &SmartHomeDashboard::showAddDialog);
 
     parseConfigFile("dashboard_config.ini");
     setupListenThread();
     setupPollQueueThread();
+}
+
+void SmartHomeDashboard::setupUI()
+{
+    labelContainer = new QWidget(this);
+    deviceLayout = new QHBoxLayout(labelContainer);
+    deviceLayout->setContentsMargins(30, 30, 30, 0);
+    deviceLayout->setSpacing(10);
+    deviceLayout->addStretch();
+
+    addDeviceBtn = new QPushButton(this);
+    addDeviceBtn->setText("");
+    addDeviceBtn->setIcon(createGreenPlusIcon());
+    addDeviceBtn->setIconSize(QSize(32, 32));
+    addDeviceBtn->setFixedSize(48, 48);
+    addDeviceBtn->setToolTip("Add");
+
+    addDeviceBtn->setStyleSheet(R"(
+        QPushButton {
+            border: none;
+            background: transparent;
+        }
+        QPushButton:hover {
+            background-color: rgba(32, 180, 90, 35);
+            border-radius: 24px;
+        }
+        QPushButton:pressed {
+            background-color: rgba(32, 180, 90, 70);
+            border-radius: 24px;
+        }
+    )");
+
+    deviceLayout->addWidget(addDeviceBtn, 0, Qt::AlignTop);
+
+    QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->addWidget(labelContainer, 0, Qt::AlignTop);
+    layout->addStretch();
+    setLayout(layout);
+}
+
+QIcon SmartHomeDashboard::createGreenPlusIcon(int size)
+{
+    QPixmap pixmap(size, size);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    QPen pen(QColor("#20B45A"));  // Green
+    pen.setWidth(4);
+    pen.setCapStyle(Qt::RoundCap);
+    painter.setPen(pen);
+
+    const int center = size / 2;
+    const int arm = size / 4;
+
+    painter.drawLine(center - arm, center, center + arm, center);
+    painter.drawLine(center, center - arm, center, center + arm);
+
+    return QIcon(pixmap);
 }
 
 void SmartHomeDashboard::setupListenThread()
@@ -200,7 +251,7 @@ void SmartHomeDashboard::addDevice(int id, int type)
 
     deviceContainers[id] = container;
     
-    deviceLayout->insertWidget(deviceLayout->count() - 1, container);
+    deviceLayout->insertWidget(deviceLayout->count() - 2, container);
 }
 
 QWidget* SmartHomeDashboard::getDevice(size_t id)
@@ -277,4 +328,32 @@ void SmartHomeDashboard::handleWarmButton(size_t id)
     message.mutable_change_temperature()->mutable_increase_temperature();
 
     sendMessageToServer(message);
+}
+
+void SmartHomeDashboard::showAddDialog()
+{
+    QDialog dialog(this);
+    dialog.setWindowTitle("Add Device");
+
+    QVBoxLayout layout(&dialog);
+
+    QRadioButton lightButton("Light");
+    QRadioButton temperatureButton("Temperature");
+    layout.addWidget(&lightButton);
+    layout.addWidget(&temperatureButton);
+
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    layout.addWidget(&buttonBox);
+
+    QObject::connect(&buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    QObject::connect(&buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+
+    if (dialog.exec() == QDialog::Accepted) {
+        int type = lightButton.isChecked() ? 0 : 1;
+        Messages::ChangeDataMessage message;
+        message.set_id(0);
+        message.mutable_new_device_type()->set_type(Messages::NewDeviceType_DeviceType(static_cast<int>(type)));
+
+        sendMessageToServer(message);
+    }
 }

@@ -5,6 +5,10 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QPushButton>
+#include <QPainter>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QRadioButton>
 
 #include <rabbitmq-c/amqp.h>
 #include <rabbitmq-c/tcp_socket.h>
@@ -59,6 +63,10 @@ private:
     std::vector<HandleTypeDependentUI> typeDependentUIHandlers;
     void setupTypeDependentUIHandlers();
 
+    void setupUI();
+    QPushButton* addDeviceBtn;
+    QIcon createGreenPlusIcon(int size = 32);
+
     QLabel* getValueLabel(size_t id);
 
     void handleOffButton(size_t id);
@@ -76,4 +84,5 @@ signals:
 public slots:
     void addDevice(int id, int type);
     void setDeviceState(int id, const QString text);
+    void showAddDialog();
 };
