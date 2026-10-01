@@ -42,6 +42,7 @@ void DeviceServer::setupPollQueueThread()
                     messageQueue.pop();
 
                     Messages::ChangeDataMessage changeDataMessage;
+
                     if (!changeDataMessage.ParseFromString(message))
                     {
                         BOOST_LOG_TRIVIAL(error) << "Failed to parse message from dashboard: " << message << std::endl;
@@ -89,6 +90,24 @@ void DeviceServer::setupPollQueueThread()
                             if (device)
                                 device->lightOff();
                             BOOST_LOG_TRIVIAL(info) << "[Server] Received request to turn off light of device " << id;
+                        }
+                    }
+                    else if (changeDataMessage.has_new_device_type())
+                    {
+                        DeviceType type = static_cast<DeviceType>(changeDataMessage.new_device_type().type());
+                        if (type == DeviceType::LIGHT_DEVICE)
+                        {
+                            auto newLightDevice = std::make_shared<LightDevice>(shared_from_this());
+                            newLightDevice->receiveId();
+                            addDevice(newLightDevice);
+                            BOOST_LOG_TRIVIAL(info) << "[Server] Received request to add new device of type LIGHT";
+                        }
+                        else if (type == DeviceType::TEMPERATURE_DEVICE)
+                        {
+                            auto newTemperatureDevice = std::make_shared<TemperatureDevice>(shared_from_this());
+                            newTemperatureDevice->receiveId();
+                            addDevice(newTemperatureDevice);
+                            BOOST_LOG_TRIVIAL(info) << "[Server] Received request to add new device of type TEMPERATURE";
                         }
                     }
                 }
