@@ -35,6 +35,7 @@ message ChangeDataMessage {
     required int32 id = 1;
     optional ChangeTemperature change_temperature = 2;
     optional ChangeLight change_light = 3;
+    optional NewDeviceType new_device_type = 4;
 }
 
 message ChangeTemperature {
@@ -61,4 +62,13 @@ message LightHalf {
 }
 
 message LightOff {
+}
+
+message NewDeviceType {
+    enum DeviceType {
+        LIGHT       = 0;
+        TEMPERATURE = 1;
+    }
+
+    required DeviceType type = 1;
 }
