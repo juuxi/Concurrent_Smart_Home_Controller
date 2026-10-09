@@ -1,11 +1,12 @@
 #include <TemperatureDevice.hpp>
 #include <DeviceServer.hpp>
 
-TemperatureDevice::TemperatureDevice(std::shared_ptr<IDeviceServer> server): Device(server) {}
+TemperatureDevice::TemperatureDevice(std::shared_ptr<IDeviceServer> server): Device(server), temperature(20) {}
 
 void TemperatureDevice::receiveId()
 {
     id = server->giveDeviceId(DeviceType::TEMPERATURE_DEVICE);
+    sendData(temperature); // Send initial temperature to the server
 }
 
 void TemperatureDevice::sendData(DeviceData data)

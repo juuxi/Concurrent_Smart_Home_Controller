@@ -1,11 +1,12 @@
 #include <LightDevice.hpp>
 #include <DeviceServer.hpp>
 
-LightDevice::LightDevice(std::shared_ptr<IDeviceServer> server): Device(server) {}
+LightDevice::LightDevice(std::shared_ptr<IDeviceServer> server): Device(server), brightness("off") {}
 
 void LightDevice::receiveId()
 {
     id = server->giveDeviceId(DeviceType::LIGHT_DEVICE);
+    sendData(brightness); // Send initial brightness to the server
 }
 
 void LightDevice::sendData(DeviceData data)
