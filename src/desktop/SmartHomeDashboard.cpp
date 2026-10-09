@@ -177,21 +177,21 @@ void SmartHomeDashboard::setupTypeDependentUIHandlers()
         layout->addWidget(measurementLabel, 1, 0);
 
         std::vector<QPushButton*> btns;
-        auto offBtn = new QPushButton("Off");
+        auto offBtn = new QPushButton("Turn Off");
         btns.push_back(offBtn);
         connect(offBtn, &QPushButton::clicked, this, [this, deviceId]() {
             this->handleOffButton(deviceId);
         });
 
-        auto halfLightsBtn = new QPushButton("Half");
+        auto halfLightsBtn = new QPushButton("Half Lights");
         btns.push_back(halfLightsBtn);
         connect(halfLightsBtn, &QPushButton::clicked, this, [this, deviceId]() {
             this->handleHalfLightsButton(deviceId);
         });
 
-        auto onBtn = new QPushButton("On");
-        btns.push_back(onBtn);
-        connect(onBtn, &QPushButton::clicked, this, [this, deviceId]() {
+        auto fullLightsBtn = new QPushButton("Full brightness");
+        btns.push_back(fullLightsBtn);
+        connect(fullLightsBtn, &QPushButton::clicked, this, [this, deviceId]() {
             this->handleOnButton(deviceId);
         });
 
